@@ -155,8 +155,7 @@ struct txpool_tx_meta_t
   uint8_t relayed;
   uint8_t do_not_relay;
   uint8_t double_spend_seen: 1;
-  uint8_t pruned: 1;
-  uint8_t bf_padding: 6;
+  uint8_t bf_padding: 7;
 
   uint8_t padding[76]; // till 192 bytes
 };
@@ -413,7 +412,7 @@ private:
    * @param tx_prunable_hash the hash of the prunable part of the transaction
    * @return the transaction ID
    */
-  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash& tx_hash, const crypto::hash& tx_prunable_hash) = 0;
+  virtual uint64_t add_transaction_data(const crypto::hash& blk_hash, const std::pair<transaction, blobdata>& tx, const crypto::hash& tx_hash, const crypto::hash& tx_prunable_hash) = 0;
 
   /**
    * @brief remove data about a transaction
@@ -541,7 +540,7 @@ protected:
    * @param tx_hash_ptr the hash of the transaction, if already calculated
    * @param tx_prunable_hash_ptr the hash of the prunable part of the transaction, if already calculated
    */
-  void add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, blobdata_ref>& tx, const crypto::hash* tx_hash_ptr = NULL, const crypto::hash* tx_prunable_hash_ptr = NULL);
+  void add_transaction(const crypto::hash& blk_hash, const std::pair<transaction, blobdata>& tx, const crypto::hash* tx_hash_ptr = NULL, const crypto::hash* tx_prunable_hash_ptr = NULL);
 
   mutable uint64_t time_tx_exists = 0;  //!< a performance metric
   uint64_t time_commit1 = 0;  //!< a performance metric
@@ -1178,6 +1177,22 @@ public:
    */
   virtual uint64_t get_tx_unlock_time(const crypto::hash& h) const = 0;
 
+  // return unlock time of output with the given amount and output amount index
+  /**
+   * @brief fetch an output's unlock time/height
+   *
+   * The subclass should return the stored unlock time for the output
+   * with the given amount and output amount index.
+   *
+   * If no such output exists, the subclass should throw OUTPUT_DNE.
+   *
+   * @param amount the amount of the requested output
+   * @param amount_index the amount index of the requested output
+   *
+   * @return the unlock time/height
+   */
+  uint64_t get_output_unlock_time(const uint64_t amount, const uint64_t global_index) const;
+
   // return tx with hash <h>
   // throw if no such tx exists
   /**
@@ -1496,7 +1511,7 @@ public:
    *
    * @param details the details of the transaction to add
    */
-  virtual void add_txpool_tx(const crypto::hash &txid, const cryptonote::blobdata_ref &blob, const txpool_tx_meta_t& details) = 0;
+  virtual void add_txpool_tx(const crypto::hash &txid, const cryptonote::blobdata &blob, const txpool_tx_meta_t& details) = 0;
 
   /**
    * @brief update a txpool transaction's metadata
@@ -1605,7 +1620,7 @@ public:
    * @param: data: the metadata for the block
    * @param: blob: the block's blob
    */
-  virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata_ref &blob) = 0;
+  virtual void add_alt_block(const crypto::hash &blkid, const cryptonote::alt_block_data_t &data, const cryptonote::blobdata &blob) = 0;
 
   /**
    * @brief get an alternative block by hash
@@ -1648,7 +1663,7 @@ public:
    *
    * @return false if the function returns false for any transaction, otherwise true
    */
-  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata_ref*)>, bool include_blob = false, bool include_unrelayed_txes = true) const = 0;
+  virtual bool for_all_txpool_txes(std::function<bool(const crypto::hash&, const txpool_tx_meta_t&, const cryptonote::blobdata*)>, bool include_blob = false, bool include_unrelayed_txes = true) const = 0;
 
   /**
    * @brief runs a function over all key images stored
@@ -1740,7 +1755,7 @@ public:
    *
    * @return false if the function returns false for any output, otherwise true
    */
-  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::blobdata_ref *blob)> f, bool include_blob = false) const = 0;
+  virtual bool for_all_alt_blocks(std::function<bool(const crypto::hash &blkid, const alt_block_data_t &data, const cryptonote::blobdata *blob)> f, bool include_blob = false) const = 0;
 
 
   //
@@ -1788,6 +1803,9 @@ public:
 
   virtual bool get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, std::vector<uint64_t> &distribution, uint64_t &base) const = 0;
 
+  virtual bool get_output_blacklist(std::vector<uint64_t> &blacklist) const = 0;
+  virtual void add_output_blacklist(std::vector<uint64_t> const &blacklist) = 0;
+
   /**
    * @brief is BlockchainDB in read-only mode?
    *
@@ -1808,6 +1826,10 @@ public:
    * @brief fix up anything that may be wrong due to past bugs
    */
   virtual void fixup();
+
+  virtual void set_service_node_data(const std::string &data) = 0;
+  virtual bool get_service_node_data(std::string &data) = 0;
+  virtual void clear_service_node_data() = 0;
 
   /**
    * @brief set whether or not to automatically remove logs

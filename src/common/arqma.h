@@ -1,4 +1,6 @@
-// Copyright (c) 2020, The Monero Project
+// Copyright (c) 2014-2020, The Monero Project
+// Copyright (c) 2018-2020, The Loki Project
+// Copyright (c)      2020, The Arqma Network
 //
 // All rights reserved.
 //
@@ -26,15 +28,17 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#ifndef ARQMA_H
+#define ARQMA_H
 
-#include <stdint.h>
-#include "crypto/crypto.h"
+#include <string>
 
-namespace cryptonote
+#define ARQMA_ARRAY_COUNT(array) sizeof(array)/sizeof(array[0])
+namespace arqma
 {
-  uint32_t get_aux_slot(const crypto::hash &id, uint32_t nonce, uint32_t n_aux_chains);
-  uint32_t get_path_from_aux_slot(uint32_t slot, uint32_t n_aux_chains);
-  uint32_t encode_mm_depth(uint32_t n_aux_chains, uint32_t nonce);
-  bool decode_mm_depth(uint32_t depth, uint32_t &n_aux_chains, uint32_t &nonce);
-}
+  double round(double);
+  double exp2(double);
+  std::string hex64_to_base32z(std::string const& src);
+}; // namespace arqma
+
+#endif // ARQMA_H
