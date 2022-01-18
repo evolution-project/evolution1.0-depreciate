@@ -236,7 +236,7 @@ namespace config
   std::string const GENESIS_TX = "011201ff00011e026bc5c7db8a664f652d78adb587ac4d759c6757258b64ef9cba3c0354e64fb2e42101abca6a39c561d0897be183eb0143990eba201aa7d2c652ab0555d28bb4b70728";
   const uint32_t GENESIS_NONCE = 52921;
   const uint64_t REWARD_INTERVAL_IN_BLOCKS = ((60 * 60 * 24 * 2) / DIFFICULTY_TARGET_V16);
-  std::string const GOVERNANCE_WALLET_ADDRESS = "ar2govGzKKncQTPTNEre3BGVGF4faUgNh5EiycjidUXMfwoMeHZSXvTay2AwURXzQDNvh3Hd2Vyn2iXctEZE5CncCdJpphqB";
+  std::string const GOVERNANCE_WALLET_ADDRESS = "";
   std::string const DEV_WALLET_ADDRESS = "";
 
   namespace testnet
@@ -267,8 +267,8 @@ namespace config
          0x11, 0x11, 0x11, 0x11, 0xFF, 0xFF, 0xFF, 0x11, 0x66, 0x11, 0xFF, 0xFF, 0xFF, 0x88, 0x11, 0x1C
        } }; // Bender's daydream
      const uint64_t REWARD_INTERVAL_IN_BLOCKS = 50;
-     std::string const GOVERNANCE_WALLET_ADDRESS = "";
-     std::string const DEV_WALLET_ADDRESS = "";
+     std::string const GOVERNANCE_WALLET_ADDRESS = "ee1zExQDwH55iHSjEKAf8ghz4Tfap8yC6MXvRP8nsvSE2hRX6rUBkmBb72KTpWNuvrNrguHQ8tBZ222LaZHBZwR817nuUh7r9";
+     std::string const DEV_WALLET_ADDRESS = "ee37JYVDQifgD7pgzAfCjG9V4cm87M426BbcpBxfNiE3CfpAcUd87a9JEkYwQ5LLwwVt5dove4ExKPVoXetcZTu112yiEK4Yn";
    }
 
    namespace blockchain_settings
