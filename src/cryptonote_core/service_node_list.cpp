@@ -44,10 +44,10 @@
 #include "service_node_rules.h"
 #include "service_node_swarm.h"
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "service_nodes"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "service_nodes"
 
-namespace arqma_bc = config::blockchain_settings;
+namespace evolution_bc = config::blockchain_settings;
 
 namespace service_nodes
 {
@@ -486,7 +486,7 @@ namespace service_nodes
     //     R := TX Public Key
     //     G := Elliptic Curve
     //
-    // At ArQmA we pack into the tx extra information to reveal information about the TX
+    // At Evolution we pack into the tx extra information to reveal information about the TX
     //   A := Public View Key (we pack contributor into tx extra, 'parsed_contribution.address')
     //   r := TX Secret Key   (we pack secret key into tx extra,  'parsed_contribution.tx_key`)
 
@@ -1153,7 +1153,7 @@ namespace service_nodes
     std::memcpy(&seed, block_hash.data, std::min(sizeof(seed), sizeof(block_hash.data)));
 
     seed += static_cast<uint64_t>(type);
-    arqma_shuffle(result, seed);
+    evolution_shuffle(result, seed);
     return result;
   }
   //----------------------------------------------------------------------------
@@ -1227,7 +1227,7 @@ namespace service_nodes
 
         default:
         {
-          assert("Arqma DEV error: " == 0);
+          assert("Evolution DEV error: " == 0);
         }
         break;
       }
@@ -1546,13 +1546,13 @@ namespace service_nodes
     std::array<uint64_t, MAX_NUMBER_OF_CONTRIBUTORS * service_nodes::MAX_KEY_IMAGES_PER_CONTRIBUTOR> excess_portions;
     std::array<uint64_t, MAX_NUMBER_OF_CONTRIBUTORS * service_nodes::MAX_KEY_IMAGES_PER_CONTRIBUTOR> min_contributions;
     {
-      uint64_t arqma_reserved = 0;
+      uint64_t evolution_reserved = 0;
       for(size_t index = 0; index < addr_to_portions.size(); ++index)
       {
         addr_to_portion_t const &addr_to_portion = addr_to_portions[index];
-        uint64_t min_contribution_portions = service_nodes::get_min_node_contribution_in_portions(staking_requirement, arqma_reserved, index);
-        uint64_t arqma_amount = service_nodes::portions_to_amount(staking_requirement, addr_to_portion.portions);
-        arqma_reserved += arqma_amount;
+        uint64_t min_contribution_portions = service_nodes::get_min_node_contribution_in_portions(staking_requirement, evolution_reserved, index);
+        uint64_t evolution_amount = service_nodes::portions_to_amount(staking_requirement, addr_to_portion.portions);
+        evolution_reserved += evolution_amount;
 
         uint64_t excess = 0;
         if(addr_to_portion.portions > min_contribution_portions)
@@ -1620,8 +1620,8 @@ namespace service_nodes
       portions_left += portions_to_steal;
       result.addresses.push_back(addr_to_portion.info.address);
       result.portions.push_back(addr_to_portion.portions);
-      uint64_t arqma_amount = service_nodes::portions_to_amount(addr_to_portion.portions, staking_requirement);
-      total_reserved += arqma_amount;
+      uint64_t evolution_amount = service_nodes::portions_to_amount(addr_to_portion.portions, staking_requirement);
+      total_reserved += evolution_amount;
     }
 
     result.success = true;

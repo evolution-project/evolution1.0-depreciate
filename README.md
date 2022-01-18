@@ -244,7 +244,7 @@ If you are using the older Raspbian Jessie image, compiling Arqma is a bit more 
 	`$ CONF_SWAPSIZE=1024`
 	`$ sudo /etc/init.d/dphys-swapfile start`
 
-* Then, install the dependencies for ArQmA except `libunwind` and `libboost-all-dev`
+* Then, install the dependencies for Evolution except `libunwind` and `libboost-all-dev`
 
 * Install the latest version of boost (this may first require invoking `$ apt-get remove --purge libboost*` to remove a previous version if you're not using a clean install):
 

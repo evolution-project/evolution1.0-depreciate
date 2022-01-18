@@ -44,10 +44,10 @@
 #include "cryptonote_core/service_node_deregister.h"
 
 using namespace epee;
-namespace arqma_bc = config::blockchain_settings;
+namespace evolution_bc = config::blockchain_settings;
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "cn"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "cn"
 
 #define ENCRYPTED_PAYMENT_ID_TAIL 0x8d
 
@@ -78,7 +78,7 @@ static const uint64_t valid_decomposed_outputs[] = {
   (uint64_t)10000000000000000000ull
 };
 
-static std::atomic<unsigned int> default_decimal_point(arqma_bc::ARQMA_DECIMALS);
+static std::atomic<unsigned int> default_decimal_point(evolution_bc::EVOLUTION_DECIMALS);
 
 static std::atomic<uint64_t> tx_hashes_calculated_count(0);
 static std::atomic<uint64_t> tx_hashes_cached_count(0);
@@ -1253,13 +1253,13 @@ namespace cryptonote
     switch (std::atomic_load(&default_decimal_point))
     {
       case 9:
-        return "arq";
+        return "evox";
       case 6:
-        return "milliarq";
+        return "millievox";
       case 3:
-        return "microarq";
+        return "microevox";
       case 0:
-        return "nanoarq";
+        return "nanoevox";
       default:
         ASSERT_MES_AND_THROW("Invalid decimal point specification: " << default_decimal_point);
     }

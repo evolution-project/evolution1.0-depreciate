@@ -1,7 +1,7 @@
 #include "service_node_swarm.h"
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "service_nodes"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "service_nodes"
 
 #define prod_static static
 

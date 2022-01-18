@@ -62,8 +62,8 @@
 #include "common/varint.h"
 #include "common/pruning.h"
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "blockchain"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "blockchain"
 
 #define FIND_BLOCKCHAIN_SUPPLEMENT_MAX_SIZE (100*1024*1024) // 100 MB
 
@@ -78,7 +78,7 @@ using namespace crypto;
  *
  */
 
-namespace arqma_bc = config::blockchain_settings;
+namespace evolution_bc = config::blockchain_settings;
 using namespace cryptonote;
 using epee::string_tools::pod_to_hex;
 
@@ -90,44 +90,20 @@ DISABLE_VS_WARNINGS(4267)
 #define BLOCK_REWARD_OVERESTIMATE (10 * 1000000000000)
 
 const forks_t mainnet_hard_forks[] = {
- { network_version_1,       0, 0, 1341378000 },
- { network_version_7,       1, 0, 1528750800 },
- { network_version_8,     100, 0, 1528751200 },
- { network_version_9,    7000, 0, 1530320400 },
- { network_version_10,  61250, 0, 1543615200 },
- { network_version_11, 131650, 0, 1552424400 },
- { network_version_12, 183700, 0, 1558656000 },
- { network_version_13, 248200, 0, 1566511680 },
- { network_version_14, 248920, 0, 1566598080 },
- { network_version_15, 303666, 0, 1573257000 },
+ { 1, 0, 0, 1581800400 },
+ { 15, 1, 0, 1581806100 }
 };
 
 const forks_t testnet_hard_forks[] = {
- { network_version_1,       0, 0, 1341378000 },
- { network_version_7,       1, 0, 1528750800 },
- { network_version_8,     100, 0, 1528751200 },
- { network_version_9,     200, 0, 1530248400 },
- { network_version_10,    300, 0, 1538352000 },
- { network_version_11,    400, 0, 1552424400 },
- { network_version_12,    500, 0, 1552824400 },
- { network_version_13,    600, 0, 1566511680 },
- { network_version_14,    700, 0, 1566598080 },
- { network_version_15,    800, 0, 1566598080 },
- { network_version_16,    900, 0, 1566598280 },
+ { 1, 0, 0, 1581800400 },
+ { 15, 1, 0, 1581806100 },
+ { 16, 100, 0, 1641432834 } // Date and time timestamp
 };
 
 const forks_t stagenet_hard_forks[] = {
- { network_version_1,         0, 0, 1341378000 },
- { network_version_7,         1, 0, 1528750800 },
- { network_version_8,       100, 0, 1528751200 },
- { network_version_9,       200, 0, 1530248400 },
- { network_version_10,      500, 0, 1538352000 },
- { network_version_11,      800, 0, 1552424400 },
- { network_version_12,     1500, 0, 1554336000 },
- { network_version_13,     2000, 0, 1560348000 },
- { network_version_14,     2720, 0, 1560351600 },
- { network_version_15,    12100, 0, 1570414500 },
- { network_version_16,    12800, 0, 1570414510 },
+ { 1, 0, 0, 1581800400 },
+ { 15, 1, 0, 1581806100 },
+ { 16, 100, 0, 1641432834 } // Date and time timestamp
 };
 
 const size_t num_mainnet_hard_forks = sizeof(mainnet_hard_forks) / sizeof(mainnet_hard_forks[0]);
@@ -497,7 +473,7 @@ bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline
     }
     catch(const std::exception& e)
     {
-      MERROR(std::string("Failed to construct Arqma notifier ") + e.what());
+      MERROR(std::string("Failed to construct Evolution notifier ") + e.what());
     }
   }
 
@@ -666,7 +642,7 @@ block Blockchain::pop_block_from_blockchain()
   block popped_block;
   std::vector<transaction> popped_txs;
 
-  CHECK_AND_ASSERT_THROW_MES(m_db->height() > 1, "It is forbidden to remove ArQmA Genesis Block.");
+  CHECK_AND_ASSERT_THROW_MES(m_db->height() > 1, "It is forbidden to remove Evolution Genesis Block.");
 
   try
   {
@@ -1352,7 +1328,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height, 
     return false;
   }
   MDEBUG("Miner tx hash: " << get_transaction_hash(b.miner_tx));
-  CHECK_AND_ASSERT_MES(b.miner_tx.unlock_time == height + config::blockchain_settings::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS, false, "coinbase transaction transaction has the wrong unlock time=" << b.miner_tx.unlock_time << ", expected " << height + config::blockchain_settings::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS);
+  CHECK_AND_ASSERT_MES(b.miner_tx.unlock_time == height + config::blockchain_settings::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS, false, "coinbase transaction transaction has the wrong unlock time=" << b.miner_tx.unlock_time << ", expected " << height + config::blockchain_settings::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS);
 
   //check outs overflow
   //NOTE: not entirely sure this is necessary, given that this function is
@@ -1398,7 +1374,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
   }
 
   block_reward_parts reward_parts;
-  if(!get_arqma_block_reward(epee::misc_utils::median(last_blocks_weights), cumulative_block_weight, already_generated_coins, hard_fork_version, reward_parts, block_reward_context))
+  if(!get_evolution_block_reward(epee::misc_utils::median(last_blocks_weights), cumulative_block_weight, already_generated_coins, hard_fork_version, reward_parts, block_reward_context))
   {
     MERROR_VER("block weight " << cumulative_block_weight << " is bigger than allowed for this blockchain");
     return false;
@@ -2250,7 +2226,7 @@ uint64_t Blockchain::get_num_mature_outputs(uint64_t amount) const
   {
     const tx_out_index toi = m_db->get_output_tx_and_index(amount, num_outs - 1);
     const uint64_t height = m_db->get_tx_block_height(toi.first);
-    if (height + config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED <= blockchain_height)
+    if (height + config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED <= blockchain_height)
       break;
     --num_outs;
   }
@@ -2319,7 +2295,7 @@ void Blockchain::get_output_key_mask_unlocked(const uint64_t& amount, const uint
 //------------------------------------------------------------------
 bool Blockchain::get_output_distribution(uint64_t amount, uint64_t from_height, uint64_t to_height, uint64_t &start_height, std::vector<uint64_t> &distribution, uint64_t &base) const
 {
-  // Arqma did start from v7 at blockheight 1 so our start is always 0
+  // Evolution did start from v7 at blockheight 1 so our start is always 0
 
   start_height = 0;
   base = 0;
@@ -3955,7 +3931,7 @@ leave:
     const el::Level level = el::Level::Warning;
     MCLOG_RED(level, "global", "**********************************************************************");
     MCLOG_RED(level, "global", "A block was seen on the network with a version higher than the last");
-    MCLOG_RED(level, "global", "known one. This may be an old version of the Arqma daemon, and a software");
+    MCLOG_RED(level, "global", "known one. This may be an old version of the Evolution daemon, and a software");
     MCLOG_RED(level, "global", "update may be required to sync further. ");
     MCLOG_RED(level, "global", "**********************************************************************");
   }
@@ -4270,13 +4246,13 @@ leave:
     LOG_ERROR("Blocks that failed verification should not reach here");
   }
 
-  std::vector<transaction> arq_txs;
-  arq_txs.reserve(txs.size());
+  std::vector<transaction> evox_txs;
+  evox_txs.reserve(txs.size());
   for(std::pair<transaction, blobdata> const &tx_pair : txs)
-    arq_txs.push_back(tx_pair.first);
+    evox_txs.push_back(tx_pair.first);
 
   for(BlockAddedHook* hook : m_block_added_hooks)
-    hook->block_added(bl, arq_txs);
+    hook->block_added(bl, evox_txs);
   TIME_MEASURE_FINISH(addblock);
 
   // do this after updating the hard fork state since the weight limit may change due to fork
@@ -4312,7 +4288,7 @@ leave:
   // currently mining for, i.e. (new_height + 1). Otherwise peers will silently
   // drop connection from each other when they go around P2Ping votes.
   m_deregister_vote_pool.remove_expired_votes(new_height + 1);
-  m_deregister_vote_pool.remove_used_votes(arq_txs);
+  m_deregister_vote_pool.remove_used_votes(evox_txs);
   get_difficulty_for_next_block(); // just to cache it
   invalidate_block_template_cache();
 
@@ -4328,7 +4304,7 @@ leave:
     }
     catch( const std::exception& e)
     {
-      MERROR(std::string("Failed to construct arqma block producer") + e.what());
+      MERROR(std::string("Failed to construct evolution block producer") + e.what());
     }
   }
 
@@ -4531,7 +4507,7 @@ void Blockchain::check_against_checkpoints(const checkpoints& points, bool enfor
       }
       else
       {
-        LOG_ERROR("WARNING: local blockchain failed to pass a ArQ-Net checkpoint, and you could be on a fork. You should either sync up from scratch, OR download a fresh blockchain bootstrap, OR enable checkpoint enforcing with the --enforce-dns-checkpointing command-line option");
+        LOG_ERROR("WARNING: local blockchain failed to pass a EVOX-Net checkpoint, and you could be on a fork. You should either sync up from scratch, OR download a fresh blockchain bootstrap, OR enable checkpoint enforcing with the --enforce-dns-checkpointing command-line option");
       }
     }
   }
@@ -5366,7 +5342,7 @@ void Blockchain::cancel()
 }
 
 #if defined(PER_BLOCK_CHECKPOINT)
-static const char expected_block_hashes_hash[] = "ef3b51de57710b1e1ef80c6bae2ba744037a407cd4ef0a5c447b91b771119cc6";
+static const char expected_block_hashes_hash[] = "b2e713e1a30dad19cbc1d5b8baeaefb6899764019242d9923f63b5e0fe5a0de1";
 void Blockchain::load_compiled_in_block_hashes(const GetCheckpointsCallback& get_checkpoints)
 {
   if (get_checkpoints == nullptr || !m_fast_sync)

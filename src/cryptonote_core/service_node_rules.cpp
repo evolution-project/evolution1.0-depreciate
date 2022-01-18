@@ -1,5 +1,5 @@
 #include "cryptonote_config.h"
-#include "common/arqma.h"
+#include "common/evolution.h"
 #include "int-util.h"
 #include "cryptonote_basic/cryptonote_format_utils.h"
 #include <limits>
@@ -10,14 +10,14 @@
 #include "blockchain.h"
 #include "service_node_rules.h"
 
-namespace arqma_bc = config::blockchain_settings;
+namespace evolution_bc = config::blockchain_settings;
 
 namespace service_nodes
 {
   uint64_t get_staking_requirement(cryptonote::network_type m_nettype, uint64_t height, uint8_t hard_fork_version)
   {
     if(m_nettype != cryptonote::MAINNET)
-      return arqma_bc::ARQMA * 100;
+      return evolution_bc::EVOLUTION * 100;
 
     uint64_t service_nodes_hard_fork_16 = 99999999;
     if(height < service_nodes_hard_fork_16)
@@ -26,8 +26,8 @@ namespace service_nodes
     uint64_t adjusted_height = height - service_nodes_hard_fork_16;
     uint64_t base = 0, variable = 0;
 
-    base = 45000 * arqma_bc::ARQMA;
-    variable = base / arqma::exp2(adjusted_height/356446.0);
+    base = 45000 * evolution_bc::EVOLUTION;
+    variable = base / evolution::exp2(adjusted_height/356446.0);
 
     uint64_t result = base + variable;
     return result;

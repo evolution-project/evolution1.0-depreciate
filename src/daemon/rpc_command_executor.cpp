@@ -47,8 +47,8 @@
 #include <numeric>
 #include <stack>
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "daemon"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "daemon"
 
 namespace daemonize {
 
@@ -1325,8 +1325,8 @@ bool t_rpc_command_executor::stop_daemon()
 //# ifdef WIN32
 //    // Stop via service API
 //    // TODO - this is only temporary!  Get rid of hard-coded constants!
-//    bool ok = windows::stop_service("Arqma Daemon");
-//    ok = windows::uninstall_service("Arqma Daemon");
+//    bool ok = windows::stop_service("Evolution Daemon");
+//    ok = windows::uninstall_service("Evolution Daemon");
 //    //bool ok = windows::stop_service(SERVICE_NAME);
 //    //ok = windows::uninstall_service(SERVICE_NAME);
 //    if (ok)
@@ -1370,10 +1370,10 @@ bool t_rpc_command_executor::print_status()
   bool daemon_is_alive = m_rpc_client->check_connection();
 
   if(daemon_is_alive) {
-    tools::success_msg_writer() << "arqmad is running";
+    tools::success_msg_writer() << "evolutiond is running";
   }
   else {
-    tools::fail_msg_writer() << "arqmad is NOT running";
+    tools::fail_msg_writer() << "evolutiond is NOT running";
   }
 
   return true;
@@ -2846,8 +2846,8 @@ bool t_rpc_command_executor::prepare_registration()
       if(delta > 3600)
       {
         tools::fail_msg_writer() << "The very last block known by this Service Node was at least " << get_human_time_ago(header.timestamp, now)
-                                 << "\nYour node is possibly Desynced with ArQmA Network either not yet fully synced."
-                                 << "\n\nRegistering this Node at this time may result in automatic Deregistration due to not being synced with ArQmA Network.\n";
+                                 << "\nYour node is possibly Desynced with Evolution Network either not yet fully synced."
+                                 << "\n\nRegistering this Node at this time may result in automatic Deregistration due to not being synced with Evolution Network.\n";
       }
     }
 
@@ -2857,7 +2857,7 @@ bool t_rpc_command_executor::prepare_registration()
       if(delta > 20)
       {
         tools::fail_msg_writer() << "The very last block known by this Service Node is synced at is " << delta << " block away from the longest chain we know about."
-                                 << "\n\nRegistering this Node at this time may result in automatic Deregistration due to not being synced with ArQmA Network.\n";
+                                 << "\n\nRegistering this Node at this time may result in automatic Deregistration due to not being synced with Evolution Network.\n";
       }
     }
   }
@@ -2942,7 +2942,7 @@ bool t_rpc_command_executor::prepare_registration()
       case register_step::is_solo_stake__operator_address_to_reserve:
       {
         std::string address_str;
-        lir = input_line_back_cancel_get_input("Enter the ARQ address for the solo staker", address_str);
+        lir = input_line_back_cancel_get_input("Enter the EVOX address for the solo staker", address_str);
         if(lir == input_line_result::back)
           continue;
 
@@ -3047,7 +3047,7 @@ bool t_rpc_command_executor::prepare_registration()
       case register_step::is_open_stake__operator_address_to_reserve:
       {
         std::string address_str;
-        lir = input_line_back_cancel_get_input("Enter the ARQ address for the operator", address_str);
+        lir = input_line_back_cancel_get_input("Enter the EVOX address for the operator", address_str);
         if(lir == input_line_result::back)
           continue;
 
@@ -3071,7 +3071,7 @@ bool t_rpc_command_executor::prepare_registration()
         std::cout << "Minimum amount that can be reserved: " << cryptonote::print_money(min_contribution) << " " << cryptonote::get_unit() << std::endl;
 
         std::string contribution_str;
-        lir = input_line_back_cancel_get_input("How much ARQ does the operator want to reserve in the stake?", contribution_str);
+        lir = input_line_back_cancel_get_input("How much EVOX does the operator want to reserve in the stake?", contribution_str);
         if(lir == input_line_result::back)
           continue;
 
@@ -3122,7 +3122,7 @@ bool t_rpc_command_executor::prepare_registration()
 
       case register_step::is_open_stake__contributor_address_to_reserve:
       {
-        std::string const prompt = "Enter the ARQ address for contributor " + std::to_string(state.contributions.size() + 1);
+        std::string const prompt = "Enter the EVOX address for contributor " + std::to_string(state.contributions.size() + 1);
         std::string address_str;
         lir = input_line_back_cancel_get_input(prompt.c_str(), address_str);
         if(lir == input_line_result::back)
@@ -3151,7 +3151,7 @@ bool t_rpc_command_executor::prepare_registration()
         std::cout << "There is " << cryptonote::print_money(amount_left) << " " << cryptonote::get_unit() << " left to meet the staking requirement." << std::endl;
 
         std::string contribution_str;
-        std::string const prompt = "How much ARQ does the contributor " + std::to_string(state.contributions.size() + 1) + " want to reserve in the stake?";
+        std::string const prompt = "How much EVOX does the contributor " + std::to_string(state.contributions.size() + 1) + " want to reserve in the stake?";
         lir = input_line_back_cancel_get_input(prompt.c_str(), contribution_str);
         if(lir == input_line_result::back)
           continue;

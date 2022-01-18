@@ -50,7 +50,7 @@ using namespace epee;
 
 using namespace crypto;
 
-namespace arqma_bc = config::blockchain_settings;
+namespace evolution_bc = config::blockchain_settings;
 
 namespace cryptonote
 {
@@ -294,7 +294,7 @@ namespace cryptonote
     block_reward_context.delayed_rewards = miner_context.delayed_rewards;
 
     block_reward_parts reward_parts;
-    if(!get_arqma_block_reward(median_weight, current_block_weight, already_generated_coins, hard_fork_version, reward_parts, block_reward_context))
+    if(!get_evolution_block_reward(median_weight, current_block_weight, already_generated_coins, hard_fork_version, reward_parts, block_reward_context))
     {
       LOG_PRINT_L0("Failed to calulate block reward");
       return false;
@@ -325,11 +325,11 @@ namespace cryptonote
         crypto::hash base_id = pbc->get_block_id_by_height(height - eleet);
         std::string hex_str = epee::string_tools::pod_to_hex(base_id).substr(0,3);
         uint64_t unlock_blocks = std::stol(hex_str, nullptr, 16) * 2;
-        tx.output_unlock_times.push_back(height + arqma_bc::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS + unlock_blocks);
+        tx.output_unlock_times.push_back(height + evolution_bc::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS + unlock_blocks);
       }
       else
       {
-        tx.output_unlock_times.push_back(height + arqma_bc::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS);
+        tx.output_unlock_times.push_back(height + evolution_bc::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS);
       }
     }
 
@@ -352,7 +352,7 @@ namespace cryptonote
         summary_amounts += out.amount = get_portion_of_reward(service_node_info[i].second, reward_parts.service_node_total);
         out.target = tk;
         tx.vout.push_back(out);
-        tx.output_unlock_times.push_back(height + arqma_bc::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS);
+        tx.output_unlock_times.push_back(height + evolution_bc::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS);
       }
     }
 
@@ -376,7 +376,7 @@ namespace cryptonote
       summary_amounts += out.amount = reward_parts.gov_reward();
       out.target = tk;
       tx.vout.push_back(out);
-      tx.output_unlock_times.push_back(height + arqma_bc::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS);
+      tx.output_unlock_times.push_back(height + evolution_bc::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS);
     }
 
     // Dev_Fund
@@ -399,21 +399,21 @@ namespace cryptonote
       summary_amounts += out.amount = reward_parts.dev_reward();
       out.target = tk;
       tx.vout.push_back(out);
-      tx.output_unlock_times.push_back(height + arqma_bc::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS);
+      tx.output_unlock_times.push_back(height + evolution_bc::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS);
     }
 
     uint64_t expected_amount = reward_parts.miner_reward() + reward_parts.service_node_paid + reward_parts.gov_reward() + reward_parts.dev_reward();
     CHECK_AND_ASSERT_MES(summary_amounts == expected_amount, false, "Failed to construct miner tx, summary_amounts: " << summary_amounts << " not equal total block_reward = " << expected_amount);
 
     //lock
-    tx.unlock_time = height + arqma_bc::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS;
+    tx.unlock_time = height + evolution_bc::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS;
     tx.vin.push_back(in);
     tx.invalidate_hashes();
 
     return true;
   }
   //---------------------------------------------------------------
-  bool get_arqma_block_reward(size_t median_weight, size_t current_block_weight, uint64_t already_generated_coins, uint8_t hard_fork_version, block_reward_parts &result, const miner_reward_context &miner_context)
+  bool get_evolution_block_reward(size_t median_weight, size_t current_block_weight, uint64_t already_generated_coins, uint8_t hard_fork_version, block_reward_parts &result, const miner_reward_context &miner_context)
   {
     result = {};
     uint64_t base_reward;
@@ -483,7 +483,7 @@ namespace cryptonote
     return addr.m_view_public_key;
   }
   //--------------------------------------------------------------
-  bool construct_tx_with_tx_key(const account_keys& sender_account_keys, const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, std::vector<tx_source_entry>& sources, std::vector<tx_destination_entry>& destinations, const boost::optional<cryptonote::tx_destination_entry>& change_addr, const std::vector<uint8_t> &extra, transaction& tx, uint64_t unlock_time, const crypto::secret_key &tx_key, const std::vector<crypto::secret_key> &additional_tx_keys, const rct::RCTConfig &rct_config, rct::multisig_out *msout, bool shuffle_outs, arqma_construct_tx_params const &tx_params)
+  bool construct_tx_with_tx_key(const account_keys& sender_account_keys, const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, std::vector<tx_source_entry>& sources, std::vector<tx_destination_entry>& destinations, const boost::optional<cryptonote::tx_destination_entry>& change_addr, const std::vector<uint8_t> &extra, transaction& tx, uint64_t unlock_time, const crypto::secret_key &tx_key, const std::vector<crypto::secret_key> &additional_tx_keys, const rct::RCTConfig &rct_config, rct::multisig_out *msout, bool shuffle_outs, evolution_construct_tx_params const &tx_params)
   {
     hw::device &hwdev = sender_account_keys.get_device();
 
@@ -505,7 +505,7 @@ namespace cryptonote
     tx.type = tx_params.tx_type;
 
     if(tx.version <= txversion::v2)
-      tx.unlock_time = unlock_time; //height + arqma::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS;
+      tx.unlock_time = unlock_time; //height + evolution::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS;
 
     tx.extra = extra;
     crypto::public_key txkey_pub;
@@ -946,7 +946,7 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------
-  bool construct_tx_and_get_tx_key(const account_keys& sender_account_keys, const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, std::vector<tx_source_entry>& sources, std::vector<tx_destination_entry>& destinations, const boost::optional<cryptonote::tx_destination_entry>& change_addr, const std::vector<uint8_t> &extra, transaction& tx, uint64_t unlock_time, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys, const rct::RCTConfig &rct_config, rct::multisig_out *msout, arqma_construct_tx_params const &tx_params)
+  bool construct_tx_and_get_tx_key(const account_keys& sender_account_keys, const std::unordered_map<crypto::public_key, subaddress_index>& subaddresses, std::vector<tx_source_entry>& sources, std::vector<tx_destination_entry>& destinations, const boost::optional<cryptonote::tx_destination_entry>& change_addr, const std::vector<uint8_t> &extra, transaction& tx, uint64_t unlock_time, crypto::secret_key &tx_key, std::vector<crypto::secret_key> &additional_tx_keys, const rct::RCTConfig &rct_config, rct::multisig_out *msout, evolution_construct_tx_params const &tx_params)
   {
     hw::device &hwdev = sender_account_keys.get_device();
     hwdev.open_tx(tx_key);
@@ -969,7 +969,7 @@ namespace cryptonote
     return r;
   }
   //---------------------------------------------------------------
-  bool construct_tx(const account_keys& sender_account_keys, std::vector<tx_source_entry> &sources, const std::vector<tx_destination_entry>& destinations, const boost::optional<cryptonote::tx_destination_entry>& change_addr, const std::vector<uint8_t> &extra, transaction& tx, uint64_t unlock_time, const arqma_construct_tx_params &tx_params)
+  bool construct_tx(const account_keys& sender_account_keys, std::vector<tx_source_entry> &sources, const std::vector<tx_destination_entry>& destinations, const boost::optional<cryptonote::tx_destination_entry>& change_addr, const std::vector<uint8_t> &extra, transaction& tx, uint64_t unlock_time, const evolution_construct_tx_params &tx_params)
   {
      std::unordered_map<crypto::public_key, cryptonote::subaddress_index> subaddresses;
      subaddresses[sender_account_keys.m_account_address.m_spend_public_key] = {0,0};
@@ -994,8 +994,8 @@ namespace cryptonote
     CHECK_AND_ASSERT_MES(r, false, "failed to parse coinbase tx from hard coded blob");
     r = parse_and_validate_tx_from_blob(tx_bl, bl.miner_tx);
     CHECK_AND_ASSERT_MES(r, false, "failed to parse coinbase tx from hard coded blob");
-    bl.major_version = arqma_bc::ARQMA_GENESIS_BLOCK_MAJOR_VERSION;
-    bl.minor_version = arqma_bc::ARQMA_GENESIS_BLOCK_MINOR_VERSION;
+    bl.major_version = evolution_bc::EVOLUTION_GENESIS_BLOCK_MAJOR_VERSION;
+    bl.minor_version = evolution_bc::EVOLUTION_GENESIS_BLOCK_MINOR_VERSION;
     bl.timestamp = 0;
     bl.nonce = config::GENESIS_NONCE;
     miner::find_nonce_for_given_block([](const cryptonote::block &b, uint64_t height, const crypto::hash *seed_hash, unsigned int threads, crypto::hash &hash){

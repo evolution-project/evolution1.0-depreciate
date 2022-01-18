@@ -32,8 +32,8 @@
 #include "enableable.h"
 #include "keyvalue_serialization_overloads.h"
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "serialization"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "serialization"
 
 namespace epee
 {

@@ -1,14 +1,14 @@
 #pragma once
 
-extern const int ARQMA_VERSION_MAJOR;
-extern const int ARQMA_VERSION_MINOR;
-extern const int ARQMA_VERSION_PATCH;
-extern const int ARQMA_SNODE_VERSION_MAJOR;
-extern const int ARQMA_SNODE_VERSION_MINOR;
+extern const int EVOLUTION_VERSION_MAJOR;
+extern const int EVOLUTION_VERSION_MINOR;
+extern const int EVOLUTION_VERSION_PATCH;
+extern const int EVOLUTION_SNODE_VERSION_MAJOR;
+extern const int EVOLUTION_SNODE_VERSION_MINOR;
 
-extern const char* const ARQMA_VERSION_TAG;
-extern const char* const ARQMA_VERSION;
-extern const char* const ARQMA_RELEASE_NAME;
-extern const char* const ARQMA_PATCH;
-extern const char* const ARQMA_VERSION_FULL;
-extern const bool ARQMA_VERSION_IS_RELEASE;
+extern const char* const EVOLUTION_VERSION_TAG;
+extern const char* const EVOLUTION_VERSION;
+extern const char* const EVOLUTION_RELEASE_NAME;
+extern const char* const EVOLUTION_PATCH;
+extern const char* const EVOLUTION_VERSION_FULL;
+extern const bool EVOLUTION_VERSION_IS_RELEASE;

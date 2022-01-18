@@ -773,7 +773,7 @@ namespace tools
     struct tx_amount_too_low : public transfer_error
     {
       explicit tx_amount_too_low(std::string&& loc)
-        :  transfer_error(std::move(loc), "ARQ Amount is too low") { }
+        :  transfer_error(std::move(loc), "EVOX Amount is too low") { }
     };
     //----------------------------------------------------------------------------------------------------
     struct zero_destination : public transfer_error

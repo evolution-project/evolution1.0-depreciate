@@ -69,8 +69,8 @@
 #include "node_rpc_proxy.h"
 #include "wallet_light_rpc.h"
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "wallet.wallet2"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "wallet.wallet2"
 
 #define SUBADDRESS_LOOKAHEAD_MAJOR 50
 #define SUBADDRESS_LOOKAHEAD_MINOR 200
@@ -838,7 +838,7 @@ private:
     void transfer_selected_rct(std::vector<cryptonote::tx_destination_entry> dsts, const std::vector<size_t>& selected_transfers,
                                size_t fake_outputs_count, std::vector<std::vector<tools::wallet2::get_outs_entry>> &outs, uint64_t unlock_time,
                                uint64_t fee, const std::vector<uint8_t>& extra, cryptonote::transaction& tx, pending_tx &ptx,
-                               const rct::RCTConfig &rct_config, const cryptonote::arqma_construct_tx_params &arqma_tx_params);
+                               const rct::RCTConfig &rct_config, const cryptonote::evolution_construct_tx_params &evolution_tx_params);
 
 //    void commit_deregister_vote(service_nodes::deregister_vote::vote& vote);
     void commit_tx(pending_tx& ptx_vector);
@@ -865,7 +865,7 @@ private:
 
     std::vector<wallet2::pending_tx> create_transactions_2(std::vector<cryptonote::tx_destination_entry> dsts, const size_t fake_outs_count, const uint64_t unlock_time,
                                                            uint32_t priority, const std::vector<uint8_t>& extra, uint32_t subaddr_account, std::set<uint32_t> subaddr_indices,
-                                                           cryptonote::arqma_construct_tx_params &tx_params);
+                                                           cryptonote::evolution_construct_tx_params &tx_params);
 
     std::vector<wallet2::pending_tx> create_transactions_all(uint64_t below, const cryptonote::account_public_address &address, bool is_subaddress, const size_t outputs,
                                                              const size_t fake_outs_count, const uint64_t unlock_time, uint32_t priority, const std::vector<uint8_t>& extra,
@@ -1233,7 +1233,7 @@ private:
     uint64_t adjust_mixin(uint64_t mixin);
     uint32_t adjust_priority(uint32_t priority);
 
-    static cryptonote::arqma_construct_tx_params construct_params(uint8_t hard_fork_version, cryptonote::txtype tx_type);
+    static cryptonote::evolution_construct_tx_params construct_params(uint8_t hard_fork_version, cryptonote::txtype tx_type);
 
     bool is_unattended() const { return m_unattended; }
 

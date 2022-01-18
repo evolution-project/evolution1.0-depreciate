@@ -62,7 +62,7 @@ extern "C" {
 #define DP(x)
 #endif
 
-//atomic units of Arqma
+//atomic units of Evolution
 #define ATOMS 64
 
 //for printing large ints

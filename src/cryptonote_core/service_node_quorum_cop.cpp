@@ -32,10 +32,10 @@
 #include "cryptonote_config.h"
 #include "cryptonote_core.h"
 #include "version.h"
-#include "common/arqma.h"
+#include "common/evolution.h"
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "quorum_cop"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "quorum_cop"
 
 namespace service_nodes
 {
@@ -210,10 +210,10 @@ namespace service_nodes
       return false;
 
     // TODO: Will need to be set Valid Version Numbers after test and before Release to Public.
-    // if(!(proof.arqma_ver_major == 7 && proof.arqma_ver_minor == 1 && proof.arqma_snode_major == 1 && proof.arqma_snode_minor == 0))
+    // if(!(proof.evolution_ver_major == 7 && proof.evolution_ver_minor == 1 && proof.evolution_snode_major == 1 && proof.evolution_snode_minor == 0))
     uint64_t height = m_core.get_current_blockchain_height();
     uint8_t hf_ver = m_core.get_hard_fork_version(height);
-    if(hf_ver >= 16 && proof.arqma_snode_major != 1) // for tests
+    if(hf_ver >= 16 && proof.evolution_snode_major != 1) // for tests
       return false;
 
     CRITICAL_REGION_LOCAL(m_lock);
@@ -230,10 +230,10 @@ namespace service_nodes
 
   void generate_uptime_proof_request(const crypto::public_key& pubkey, const crypto::secret_key& seckey, cryptonote::NOTIFY_UPTIME_PROOF::request& req)
   {
-    req.arqma_ver_major = static_cast<uint16_t>(ARQMA_VERSION_MAJOR);
-    req.arqma_ver_minor = static_cast<uint16_t>(ARQMA_VERSION_MINOR);
-    req.arqma_snode_major = static_cast<uint16_t>(ARQMA_SNODE_VERSION_MAJOR);
-    req.arqma_snode_minor = static_cast<uint16_t>(ARQMA_SNODE_VERSION_MINOR);
+    req.evolution_ver_major = static_cast<uint16_t>(EVOLUTION_VERSION_MAJOR);
+    req.evolution_ver_minor = static_cast<uint16_t>(EVOLUTION_VERSION_MINOR);
+    req.evolution_snode_major = static_cast<uint16_t>(EVOLUTION_SNODE_VERSION_MAJOR);
+    req.evolution_snode_minor = static_cast<uint16_t>(EVOLUTION_SNODE_VERSION_MINOR);
     req.timestamp = time(nullptr);
     req.pubkey = pubkey;
 

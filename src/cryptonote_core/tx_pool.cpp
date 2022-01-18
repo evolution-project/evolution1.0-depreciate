@@ -47,8 +47,8 @@
 #include "common/perf_timer.h"
 #include "crypto/hash.h"
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "txpool"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "txpool"
 
 DISABLE_VS_WARNINGS(4244 4345 4503) //'boost::foreach_detail_::or_' : decorated name length exceeded, name was truncated
 
@@ -1334,7 +1334,7 @@ namespace cryptonote
     }
 
     block_reward_parts reward_parts = {};
-    get_arqma_block_reward(median_weight, total_weight, already_generated_coins, version, reward_parts, block_reward_context);
+    get_evolution_block_reward(median_weight, total_weight, already_generated_coins, version, reward_parts, block_reward_context);
     best_coinbase = reward_parts.miner;
 
     size_t max_total_weight = 2 * median_weight - CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE;
@@ -1367,7 +1367,7 @@ namespace cryptonote
         // If we're getting lower coinbase tx,
         // stop including more tx
         block_reward_parts reward_parts_other = {};
-        if(!get_arqma_block_reward(median_weight, total_weight + meta.weight, already_generated_coins, version, reward_parts_other, block_reward_context))
+        if(!get_evolution_block_reward(median_weight, total_weight + meta.weight, already_generated_coins, version, reward_parts_other, block_reward_context))
         {
           LOG_PRINT_L2("  would exceed maximum block weight");
           continue;

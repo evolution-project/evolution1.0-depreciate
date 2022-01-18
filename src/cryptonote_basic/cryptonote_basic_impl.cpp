@@ -44,11 +44,11 @@ using namespace epee;
 #include "int-util.h"
 #include "common/dns_utils.h"
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "cn"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "cn"
 
-namespace arqma_tx = config::tx_settings;
-namespace arqma_bc = config::blockchain_settings;
+namespace evolution_tx = config::tx_settings;
+namespace evolution_bc = config::blockchain_settings;
 
 namespace cryptonote {
 
@@ -75,12 +75,12 @@ namespace cryptonote {
   {
     if(hard_fork_version < 13)
       return CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V5;
-    return arqma_bc::MINIMUM_BLOCK_SIZE_LIMIT;
+    return evolution_bc::MINIMUM_BLOCK_SIZE_LIMIT;
   }
   //-----------------------------------------------------------------------------------------------
   size_t get_max_tx_size()
   {
-    return arqma_tx::TRANSACTION_SIZE_LIMIT;
+    return evolution_tx::TRANSACTION_SIZE_LIMIT;
   }
   //-----------------------------------------------------------------------------------------------
   bool get_base_block_reward(size_t median_weight, size_t current_block_weight, uint64_t already_generated_coins, uint64_t &reward, uint8_t hard_fork_version, uint64_t height)
@@ -91,13 +91,13 @@ namespace cryptonote {
 
     if(height == 1)
     {
-      reward = arqma_bc::PREMINE;
+      reward = evolution_bc::PREMINE;
       return true;
     }
 
     if(hard_fork_version > 12)
     {
-      already_generated_coins -= arqma_bc::PREMINE_BURN;
+      already_generated_coins -= evolution_bc::PREMINE_BURN;
     }
 
     uint64_t base_reward = (MONEY_SUPPLY - already_generated_coins) >> emission_speed_factor;

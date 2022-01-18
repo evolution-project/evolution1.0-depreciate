@@ -80,7 +80,7 @@ using namespace epee;
 
 #include "cryptonote_core/service_node_list.h"
 #include "cryptonote_core/service_node_rules.h"
-#include "common/arqma.h"
+#include "common/evolution.h"
 
 extern "C"
 {
@@ -91,8 +91,8 @@ using namespace std;
 using namespace crypto;
 using namespace cryptonote;
 
-#undef ARQMA_DEFAULT_LOG_CATEGORY
-#define ARQMA_DEFAULT_LOG_CATEGORY "wallet.wallet2"
+#undef EVOLUTION_DEFAULT_LOG_CATEGORY
+#define EVOLUTION_DEFAULT_LOG_CATEGORY "wallet.wallet2"
 
 // used to choose when to stop adding outputs to a tx
 #define APPROXIMATE_INPUT_BYTES 80
@@ -104,9 +104,9 @@ using namespace cryptonote;
 #define CHACHA8_KEY_TAIL 0x8c
 #define CACHE_KEY_TAIL 0x8d
 
-#define UNSIGNED_TX_PREFIX "ArQmA unsigned tx set\004"
-#define SIGNED_TX_PREFIX "ArQmA signed tx set\004"
-#define MULTISIG_UNSIGNED_TX_PREFIX "ArQmA multisig unsigned tx set\001"
+#define UNSIGNED_TX_PREFIX "Evolution unsigned tx set\004"
+#define SIGNED_TX_PREFIX "Evolution signed tx set\004"
+#define MULTISIG_UNSIGNED_TX_PREFIX "Evolution multisig unsigned tx set\001"
 
 #define RECENT_OUTPUT_RATIO (0.50) // 50% of outputs are from the recent zone
 #define RECENT_OUTPUT_DAYS (1.8) // last 1.8 day makes up the recent zone
@@ -117,11 +117,11 @@ using namespace cryptonote;
 
 #define SECOND_OUTPUT_RELATEDNESS_THRESHOLD 0.0f
 
-#define KEY_IMAGE_EXPORT_FILE_MAGIC "ArQmA key image export\003"
+#define KEY_IMAGE_EXPORT_FILE_MAGIC "Evolution key image export\003"
 
-#define MULTISIG_EXPORT_FILE_MAGIC "ArQmA multisig export\001"
+#define MULTISIG_EXPORT_FILE_MAGIC "Evolution multisig export\001"
 
-#define OUTPUT_EXPORT_FILE_MAGIC "ArQmA output export\004"
+#define OUTPUT_EXPORT_FILE_MAGIC "Evolution output export\004"
 
 #define SEGREGATION_FORK_HEIGHT 9999999999999
 #define TESTNET_SEGREGATION_FORK_HEIGHT 9999999999999
@@ -141,9 +141,9 @@ namespace
   std::string get_default_ringdb_path()
   {
     boost::filesystem::path dir = tools::get_default_data_dir();
-    // remove .arqma, replace with .shared-ringdb
+    // remove .evolution, replace with .shared-ringdb
     //dir = dir.remove_filename();
-    // store in .arqma/shared-ringdb no colision with monero
+    // store in .evolution/shared-ringdb no colision with monero
     dir /= "shared-ringdb";
     return dir.string();
   }
@@ -244,7 +244,7 @@ struct options {
   const command_line::arg_descriptor<uint64_t> kdf_rounds = {"kdf-rounds", tools::wallet2::tr("Number of rounds for the key derivation function"), 1};
   const command_line::arg_descriptor<std::string> hw_device = {"hw-device", tools::wallet2::tr("HW device to use"), ""};
   const command_line::arg_descriptor<std::string> tx_notify = { "tx-notify" , "Run a program for each new incoming transaction, '%s' will be replaced by the transaction hash" , "" };
-  const command_line::arg_descriptor<bool> offline = {"offline", tools::wallet2::tr("Do not connect to Arqma Daemon, not use DNS"), false};
+  const command_line::arg_descriptor<bool> offline = {"offline", tools::wallet2::tr("Do not connect to Evolution Daemon, not use DNS"), false};
 };
 
 void do_prepare_file_names(const std::string& file_path, std::string& keys_file, std::string& wallet_file)
@@ -911,12 +911,12 @@ gamma_picker::gamma_picker(const std::vector<uint64_t> &rct_offsets, double shap
     rct_offsets(rct_offsets)
 {
   gamma = std::gamma_distribution<double>(shape, scale);
-  THROW_WALLET_EXCEPTION_IF(rct_offsets.size() <= config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED, error::wallet_internal_error, "Bad offset calculation");
+  THROW_WALLET_EXCEPTION_IF(rct_offsets.size() <= config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED, error::wallet_internal_error, "Bad offset calculation");
   const size_t blocks_in_a_year = 86400 * 365 / DIFFICULTY_TARGET_V16;
   const size_t blocks_to_consider = std::min<size_t>(rct_offsets.size(), blocks_in_a_year);
   const size_t outputs_to_consider = rct_offsets.back() - (blocks_to_consider < rct_offsets.size() ? rct_offsets[rct_offsets.size() - blocks_to_consider - 1] : 0);
   begin = rct_offsets.data();
-  end = rct_offsets.data() + rct_offsets.size() - config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED;
+  end = rct_offsets.data() + rct_offsets.size() - config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED;
   num_rct_outputs = *(end - 1);
   THROW_WALLET_EXCEPTION_IF(num_rct_outputs == 0, error::wallet_internal_error, "No rct outputs");
   average_output_time = DIFFICULTY_TARGET_V16 * blocks_to_consider / outputs_to_consider; // this assumes constant target over the whole rct range
@@ -948,7 +948,7 @@ uint64_t gamma_picker::pick()
   {
     double percent_of_blacklisted_outputs = output_blacklist.size() / (double)n_rct;
     if(static_cast<int>(percent_of_blacklisted_outputs + 1) > 5)
-      MWARNING("Above 5% outputs are blacklisted. Please notify ArQmA Development Team");
+      MWARNING("Above 5% outputs are blacklisted. Please notify Evolution Development Team");
   }
 
   for(;;)
@@ -1561,8 +1561,8 @@ void wallet2::scan_output(const cryptonote::transaction &tx, bool miner_tx, cons
     if (!m_encrypt_keys_after_refresh)
     {
       boost::optional<epee::wipeable_string> pwd = m_callback->on_get_password(pool ? "output found in pool" : "output received");
-      THROW_WALLET_EXCEPTION_IF(!pwd, error::password_needed, tr("Password is needed to compute key image for incoming Arqma"));
-      THROW_WALLET_EXCEPTION_IF(!verify_password(*pwd), error::password_needed, tr("Invalid password: password is needed to compute key image for incoming Arqma"));
+      THROW_WALLET_EXCEPTION_IF(!pwd, error::password_needed, tr("Password is needed to compute key image for incoming Evolution"));
+      THROW_WALLET_EXCEPTION_IF(!verify_password(*pwd), error::password_needed, tr("Invalid password: password is needed to compute key image for incoming Evolution"));
       decrypt_keys(*pwd);
       m_encrypt_keys_after_refresh = *pwd;
     }
@@ -3650,7 +3650,7 @@ bool wallet2::load_keys(const std::string& keys_file_name, const epee::wipeable_
     m_confirm_missing_payment_id = false;
 //    m_confirm_non_default_ring_size = true;
     m_ask_password = AskPasswordToDecrypt;
-    cryptonote::set_default_decimal_point(config::blockchain_settings::ARQMA_DECIMALS);
+    cryptonote::set_default_decimal_point(config::blockchain_settings::EVOLUTION_DECIMALS);
     m_min_output_count = 0;
     m_min_output_value = 0;
     m_merge_destinations = true;
@@ -3783,7 +3783,7 @@ bool wallet2::load_keys(const std::string& keys_file_name, const epee::wipeable_
 //    m_confirm_non_default_ring_size = field_confirm_non_default_ring_size;
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, ask_password, AskPasswordType, Int, false, AskPasswordToDecrypt);
     m_ask_password = field_ask_password;
-    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, default_decimal_point, int, Int, false, config::blockchain_settings::ARQMA_DECIMALS);
+    GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, default_decimal_point, int, Int, false, config::blockchain_settings::EVOLUTION_DECIMALS);
     cryptonote::set_default_decimal_point(field_default_decimal_point);
     GET_FIELD_FROM_JSON_RETURN_ON_ERROR(json, min_output_count, uint32_t, Uint, false, 0);
     m_min_output_count = field_min_output_count;
@@ -5379,7 +5379,7 @@ std::map<uint32_t, std::pair<uint64_t, uint64_t>> wallet2::unlocked_balance_per_
       }
       else
       {
-        uint64_t unlock_height = td.m_block_height + std::max<uint64_t>(config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED, CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS);
+        uint64_t unlock_height = td.m_block_height + std::max<uint64_t>(config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED, CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS);
         if(td.m_tx.unlock_time < CRYPTONOTE_MAX_BLOCK_NUMBER && td.m_tx.unlock_time > unlock_height)
           unlock_height = td.m_tx.unlock_time;
         blocks_to_unlock = unlock_height > blockchain_height ? unlock_height - blockchain_height : 0;
@@ -5570,7 +5570,7 @@ bool wallet2::is_transfer_unlocked(uint64_t unlock_time, uint64_t block_height, 
   if(!is_tx_spendtime_unlocked(unlock_time, block_height))
     return false;
 
-  if(block_height + config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED > get_blockchain_current_height())
+  if(block_height + config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED > get_blockchain_current_height())
     return false;
 
   if(!key_image)
@@ -6091,7 +6091,7 @@ bool wallet2::sign_tx(unsigned_tx_set &exported_txs, std::vector<wallet2::pendin
     std::vector<crypto::secret_key> additional_tx_keys;
     rct::multisig_out msout;
 
-    arqma_construct_tx_params tx_params;
+    evolution_construct_tx_params tx_params;
     tx_params.hard_fork_version = sd.hard_fork_version;
     tx_params.tx_type = sd.tx_type;
     bool r = cryptonote::construct_tx_and_get_tx_key(m_account.get_keys(), m_subaddresses, sd.sources, sd.splitted_dsts, sd.change_dts, sd.extra, ptx.tx, sd.unlock_time, tx_key, additional_tx_keys, rct_config, m_multisig ? &msout : NULL, tx_params);
@@ -6523,7 +6523,7 @@ bool wallet2::sign_multisig_tx(multisig_tx_set &exported_txs, std::vector<crypto
     rct::multisig_out msout = ptx.multisig_sigs.front().msout;
     auto sources = sd.sources;
 
-    arqma_construct_tx_params tx_params;
+    evolution_construct_tx_params tx_params;
     tx_params.hard_fork_version = sd.hard_fork_version;
     tx_params.tx_type = sd.tx_type;
     rct::RCTConfig rct_config = sd.rct_config;
@@ -6666,9 +6666,9 @@ uint64_t wallet2::get_fee_multiplier(uint32_t priority, int fee_algorithm)
       priority = 1;
   }
 
-  THROW_WALLET_EXCEPTION_IF(fee_algorithm < 0 || fee_algorithm >= (int)(ARQMA_ARRAY_COUNT(multipliers)), error::invalid_priority);
+  THROW_WALLET_EXCEPTION_IF(fee_algorithm < 0 || fee_algorithm >= (int)(EVOLUTION_ARRAY_COUNT(multipliers)), error::invalid_priority);
   fee_multipliers_t const *curr_multiplier = multipliers + fee_algorithm;
-  if(priority >= 1 && priority <= (uint32_t)ARQMA_ARRAY_COUNT(curr_multiplier->values))
+  if(priority >= 1 && priority <= (uint32_t)EVOLUTION_ARRAY_COUNT(curr_multiplier->values))
   {
     return curr_multiplier->values[priority-1];
   }
@@ -6820,9 +6820,9 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
   return priority;
 }
 
-arqma_construct_tx_params wallet2::construct_params(uint8_t hard_fork_version, txtype tx_type)
+evolution_construct_tx_params wallet2::construct_params(uint8_t hard_fork_version, txtype tx_type)
 {
-  arqma_construct_tx_params tx_params;
+  evolution_construct_tx_params tx_params;
   tx_params.hard_fork_version = hard_fork_version;
   tx_params.tx_type = tx_type;
 
@@ -7127,7 +7127,7 @@ wallet2::stake_result wallet2::check_stake_allowed(const crypto::public_key& sn_
   if(max_contrib_total == 0)
   {
     result.status = stake_result_status::service_node_contribution_maxed;
-    result.msg = tr("Current wallet already fulified max amount of ARQ required for Service Node");
+    result.msg = tr("Current wallet already fulified max amount of EVOX required for Service Node");
     return result;
   }
 
@@ -7155,7 +7155,7 @@ wallet2::stake_result wallet2::check_stake_allowed(const crypto::public_key& sn_
       result.msg.reserve(128);
       result.msg = tr("You must contribute at least: ");
       result.msg += print_money(min_contrib_total);
-      result.msg += tr(" ARQ to become an Contributor for this Service Node.");
+      result.msg += tr(" EVOX to become an Contributor for this Service Node.");
       return result;
     }
   }
@@ -7164,7 +7164,7 @@ wallet2::stake_result wallet2::check_stake_allowed(const crypto::public_key& sn_
   {
     result.msg += tr("You are allowed to contribute max: ");
     result.msg += print_money(max_contrib_total);
-    result.msg += tr(" more ARQ to this Service Node.\n");
+    result.msg += tr(" more EVOX to this Service Node.\n");
     result.msg += tr("Reducing your stake from ");
     result.msg += print_money(amount);
     result.msg += tr(" to ");
@@ -7237,7 +7237,7 @@ wallet2::stake_result wallet2::create_stake_tx(const crypto::public_key& service
       return result;
     }
 
-    arqma_construct_tx_params tx_params = tools::wallet2::construct_params(*hard_fork_version, txtype::stake);
+    evolution_construct_tx_params tx_params = tools::wallet2::construct_params(*hard_fork_version, txtype::stake);
     auto ptx_vector = create_transactions_2(dsts, config::tx_settings::tx_mixin, unlock_at_block, priority, extra, 0, subaddr_indices, tx_params);
     if(ptx_vector.size() == 1)
     {
@@ -7452,7 +7452,7 @@ wallet2::register_service_node_result wallet2::create_register_service_node_tx(c
       cryptonote::address_parse_info dest = {};
       dest.address = address;
 
-      arqma_construct_tx_params tx_params = tools::wallet2::construct_params(*hard_fork_version, txtype::stake);
+      evolution_construct_tx_params tx_params = tools::wallet2::construct_params(*hard_fork_version, txtype::stake);
       auto ptx_vector = create_transactions_2(dsts, config::tx_settings::tx_mixin, 0, priority, extra, subaddr_account, subaddr_indices, tx_params);
       if(ptx_vector.size() == 1)
       {
@@ -7555,7 +7555,7 @@ wallet2::request_stake_unlock_result wallet2::can_request_stake_unlock(const cry
 
       result.msg.append("You are requesting to unlock Staking Amount of: ");
       result.msg.append(cryptonote::print_money(contribution.amount));
-      result.msg.append(" ARQ from the Service Node Network.\nThis will schedule Service Node: ");
+      result.msg.append(" EVOX from the Service Node Network.\nThis will schedule Service Node: ");
       result.msg.append(node_info.service_node_pubkey);
       result.msg.append(" to be deactivated.");
       if (node_info.contributors.size() > 1) {
@@ -7599,7 +7599,7 @@ wallet2::request_stake_unlock_result wallet2::can_request_stake_unlock(const cry
     std::vector<uint8_t> extra;
     uint32_t priority = 0;
     std::set<uint32_t> subaddr_indices = {};
-    arqma_construct_tx_params tx_params = tools::wallet2::construct_params(*hard_fork_version, txtype::key_image_unlock);
+    evolution_construct_tx_params tx_params = tools::wallet2::construct_params(*hard_fork_version, txtype::key_image_unlock);
 
     add_service_node_pubkey_to_tx_extra(extra, sn_key);
     add_tx_key_image_unlock_to_tx_extra(extra, unlock);
@@ -7808,7 +7808,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       if (has_rct_distribution)
       {
         // check we're clear enough of rct start, to avoid corner cases below
-        THROW_WALLET_EXCEPTION_IF(rct_offsets.size() <= config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED,
+        THROW_WALLET_EXCEPTION_IF(rct_offsets.size() <= config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED,
             error::get_output_distribution, "Not enough rct outputs");
         THROW_WALLET_EXCEPTION_IF(rct_offsets.back() <= max_rct_index,
             error::get_output_distribution, "Daemon reports suspicious number of rct outputs");
@@ -7906,7 +7906,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       std::unordered_set<uint64_t> seen_indices;
       // request more for rct in base recent (locked) coinbases are picked, since they're locked for longer
       // Unlock minimum is 18 blocks, max 8208 blocks (12 days)
-      size_t requested_outputs_count = base_requested_outputs_count + (td.is_rct() ? 8208 - config::blockchain_settings::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS - config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED : 0);
+      size_t requested_outputs_count = base_requested_outputs_count + (td.is_rct() ? 8208 - config::blockchain_settings::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS - config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED : 0);
       size_t start = req.outputs.size();
       bool use_histogram = amount != 0 || !has_rct_distribution;
 
@@ -7975,7 +7975,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       else
       {
         // the base offset of the first rct output in the first unlocked block (or the one to be if there's none)
-        num_outs = rct_offsets[rct_offsets.size() - config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED];
+        num_outs = rct_offsets[rct_offsets.size() - config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED];
         LOG_PRINT_L1("" << num_outs << " unlocked rct outputs");
         THROW_WALLET_EXCEPTION_IF(num_outs == 0, error::wallet_internal_error,
             "histogram reports no unlocked rct outputs, not even ours");
@@ -8190,7 +8190,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
           [](const get_outputs_out &a, const get_outputs_out &b) { return a.index < b.index; });
     }
 
-    if (ELPP->vRegistry()->allowed(el::Level::Debug, ARQMA_DEFAULT_LOG_CATEGORY))
+    if (ELPP->vRegistry()->allowed(el::Level::Debug, EVOLUTION_DEFAULT_LOG_CATEGORY))
     {
       std::map<uint64_t, std::set<uint64_t>> outs;
       for (const auto &i: req.outputs)
@@ -8219,7 +8219,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
     {
       const transfer_details &td = m_transfers[idx];
       // Unlock minimum is 18 blocks, max 8208 blocks (12 days)
-      size_t requested_outputs_count = base_requested_outputs_count + (td.is_rct() ? 8208 - config::blockchain_settings::ARQMA_BLOCK_UNLOCK_CONFIRMATIONS - config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED : 0);
+      size_t requested_outputs_count = base_requested_outputs_count + (td.is_rct() ? 8208 - config::blockchain_settings::EVOLUTION_BLOCK_UNLOCK_CONFIRMATIONS - config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED : 0);
       outs.push_back(std::vector<get_outs_entry>());
       outs.back().reserve(fake_outputs_count + 1);
       const rct::key mask = td.is_rct() ? rct::commit(td.amount(), td.m_mask) : rct::zeroCommit(td.amount());
@@ -8239,7 +8239,7 @@ void wallet2::get_outs(std::vector<std::vector<tools::wallet2::get_outs_entry>> 
       }
       bool use_histogram = amount != 0 || !has_rct_distribution;
       if (!use_histogram)
-        num_outs = rct_offsets[rct_offsets.size() - config::tx_settings::ARQMA_TX_CONFIRMATIONS_REQUIRED];
+        num_outs = rct_offsets[rct_offsets.size() - config::tx_settings::EVOLUTION_TX_CONFIRMATIONS_REQUIRED];
 
       // make sure the real outputs we asked for are really included, along
       // with the correct key and mask: this guards against an active attack
@@ -8361,7 +8361,7 @@ void wallet2::transfer_selected_rct(std::vector<cryptonote::tx_destination_entry
                                     cryptonote::transaction& tx,
                                     pending_tx &ptx,
                                     const rct::RCTConfig &rct_config,
-                                    const arqma_construct_tx_params &tx_params)
+                                    const evolution_construct_tx_params &tx_params)
 {
   using namespace cryptonote;
   // throw if attempting a transaction with no destinations
@@ -9332,7 +9332,7 @@ bool wallet2::light_wallet_key_image_is_ours(const crypto::key_image& key_image,
 // This system allows for sending (almost) the entire balance, since it does
 // not generate spurious change in all txes, thus decreasing the instantaneous
 // usable balance.
-std::vector<wallet2::pending_tx> wallet2::create_transactions_2(std::vector<cryptonote::tx_destination_entry> dsts, const size_t fake_outs_count, const uint64_t unlock_time, uint32_t priority, const std::vector<uint8_t>& extra, uint32_t subaddr_account, std::set<uint32_t> subaddr_indices, arqma_construct_tx_params &tx_params)
+std::vector<wallet2::pending_tx> wallet2::create_transactions_2(std::vector<cryptonote::tx_destination_entry> dsts, const size_t fake_outs_count, const uint64_t unlock_time, uint32_t priority, const std::vector<uint8_t>& extra, uint32_t subaddr_account, std::set<uint32_t> subaddr_indices, evolution_construct_tx_params &tx_params)
 {
   //ensure device is let in NONE mode in any case
   hw::device &hwdev = m_account.get_device();
@@ -10045,7 +10045,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_from(const crypton
   boost::optional<uint8_t> hard_fork_version = get_hard_fork_version();
   THROW_WALLET_EXCEPTION_IF(!hard_fork_version, error::get_hard_fork_version_error, "Failed to query current hard fork version");
 
-  arqma_construct_tx_params arqma_tx_params = tools::wallet2::construct_params(*hard_fork_version, tx_type);
+  evolution_construct_tx_params evolution_tx_params = tools::wallet2::construct_params(*hard_fork_version, tx_type);
 
   LOG_PRINT_L2("Starting with " << unused_transfers_indices.size() << " non-dust outputs and " << unused_dust_indices.size() << " dust outputs");
 
@@ -10110,7 +10110,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_from(const crypton
 
       LOG_PRINT_L2("Trying to create a tx now, with " << tx.dsts.size() << " destinations and " << tx.selected_transfers.size() << " outputs");
 
-      transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, outs, unlock_time, needed_fee, extra, test_tx, test_ptx, rct_config, arqma_tx_params);
+      transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, outs, unlock_time, needed_fee, extra, test_tx, test_ptx, rct_config, evolution_tx_params);
 
       auto txBlob = t_serializable_object_to_blob(test_ptx.tx);
       needed_fee = calculate_fee(test_ptx.tx, txBlob.size(), base_fee, fee_multiplier, fee_quantization_mask);
@@ -10143,7 +10143,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_from(const crypton
           dt.amount = dt_amount + dt_residue;
         }
 
-        transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, outs, unlock_time, needed_fee, extra, test_tx, test_ptx, rct_config, arqma_tx_params);
+        transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, outs, unlock_time, needed_fee, extra, test_tx, test_ptx, rct_config, evolution_tx_params);
 
         txBlob = t_serializable_object_to_blob(test_ptx.tx);
         needed_fee = calculate_fee(test_ptx.tx, txBlob.size(), base_fee, fee_multiplier, fee_quantization_mask);
@@ -10178,7 +10178,7 @@ std::vector<wallet2::pending_tx> wallet2::create_transactions_from(const crypton
     cryptonote::transaction test_tx;
     pending_tx test_ptx;
 
-    transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, tx.outs, unlock_time, tx.needed_fee, extra, test_tx, test_ptx, rct_config, arqma_tx_params);
+    transfer_selected_rct(tx.dsts, tx.selected_transfers, fake_outs_count, tx.outs, unlock_time, tx.needed_fee, extra, test_tx, test_ptx, rct_config, evolution_tx_params);
 
     auto txBlob = t_serializable_object_to_blob(test_ptx.tx);
     tx.tx = test_tx;
@@ -12655,7 +12655,7 @@ std::string wallet2::make_uri(const std::string &address, const std::string &pay
     }
   }
 
-  std::string uri = "arqma:" + address;
+  std::string uri = "evolution:" + address;
   unsigned int n_fields = 0;
 
   if (!payment_id.empty())
@@ -12684,16 +12684,16 @@ std::string wallet2::make_uri(const std::string &address, const std::string &pay
 //----------------------------------------------------------------------------------------------------
 bool wallet2::parse_uri(const std::string &uri, std::string &address, std::string &payment_id, uint64_t &amount, std::string &tx_description, std::string &recipient_name, std::vector<std::string> &unknown_parameters, std::string &error)
 {
-  static const std::string ARQMA_URI = "arqma:";
-  static const int ARQMA_URI_LEN = ARQMA_URI.length();
+  static const std::string EVOLUTION_URI = "evolution:";
+  static const int EVOLUTION_URI_LEN = EVOLUTION_URI.length();
 
-  if (uri.substr(0, ARQMA_URI_LEN) != ARQMA_URI)
+  if (uri.substr(0, EVOLUTION_URI_LEN) != EVOLUTION_URI)
   {
-    error = std::string("URI has wrong scheme (expected ") + "\"" + ARQMA_URI + "\"): " + uri;
+    error = std::string("URI has wrong scheme (expected ") + "\"" + EVOLUTION_URI + "\"): " + uri;
     return false;
   }
 
-  std::string remainder = uri.substr(ARQMA_URI_LEN);
+  std::string remainder = uri.substr(EVOLUTION_URI_LEN);
   const char *ptr = strchr(remainder.c_str(), '?');
   address = ptr ? remainder.substr(0, ptr-remainder.c_str()) : remainder;
 
@@ -12913,7 +12913,7 @@ std::vector<std::pair<uint64_t, uint64_t>> wallet2::estimate_backlog(const std::
     uint64_t nblocks_min = priority_weight_min / full_reward_zone;
     uint64_t nblocks_max = priority_weight_max / full_reward_zone;
     MDEBUG("estimate_backlog: priority_weight " << priority_weight_min << " - " << priority_weight_max << " for "
-        << our_fee_byte_min << " - " << our_fee_byte_max << " nanoarq byte fee, "
+        << our_fee_byte_min << " - " << our_fee_byte_max << " nanoevox byte fee, "
         << nblocks_min << " - " << nblocks_max << " blocks at block weight " << full_reward_zone);
     blocks.push_back(std::make_pair(nblocks_min, nblocks_max));
   }
@@ -12951,7 +12951,7 @@ uint64_t wallet2::get_segregation_fork_height() const
   static const bool use_dns = true;
   if (use_dns)
   {
-    // All four Arq-Net domains have DNSSEC on and valid
+    // All four EVOX-Net domains have DNSSEC on and valid
     static const std::vector<std::string> dns_urls = {
 
     };

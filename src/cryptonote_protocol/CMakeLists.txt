@@ -28,7 +28,7 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 cmake_minimum_required(VERSION 3.10)
-project(arqma CXX)
+project(evolution CXX)
 
 set(cryptonote_protocol_sources
   block_queue.cpp
@@ -43,10 +43,10 @@ set(cryptonote_protocol_private_headers
   cryptonote_protocol_handler.h
   cryptonote_protocol_handler_common.h)
 
-arqma_private_headers(cryptonote_protocol
+evolution_private_headers(cryptonote_protocol
   ${cryptonote_protocol_private_headers})
 
-arqma_add_library(cryptonote_protocol
+evolution_add_library(cryptonote_protocol
   ${cryptonote_protocol_sources}
   ${cryptonote_protocol_headers}
   ${cryptonote_protocol_private_headers})

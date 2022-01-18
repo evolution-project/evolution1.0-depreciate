@@ -147,7 +147,7 @@ namespace service_nodes
   };
 
   template<typename T>
-  void arqma_shuffle(std::vector<T>& a, uint64_t seed)
+  void evolution_shuffle(std::vector<T>& a, uint64_t seed)
   {
     if(a.size() <= 1)
       return;

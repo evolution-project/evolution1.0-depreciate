@@ -44,8 +44,8 @@ namespace hw {
 
   #ifdef WITH_DEVICE_LEDGER
 
-    #undef ARQMA_DEFAULT_LOG_CATEGORY
-    #define ARQMA_DEFAULT_LOG_CATEGORY "device.ledger"
+    #undef EVOLUTION_DEFAULT_LOG_CATEGORY
+    #define EVOLUTION_DEFAULT_LOG_CATEGORY "device.ledger"
 
     /* ===================================================================== */
     /* ===                           Debug                              ==== */
@@ -324,8 +324,8 @@ namespace hw {
     bool device_ledger::reset() {
       reset_buffer();
       int offset = set_command_header_noopt(INS_RESET);
-      memmove(this->buffer_send+offset, ARQMA_VERSION, strlen(ARQMA_VERSION));
-      offset += strlen(ARQMA_VERSION);
+      memmove(this->buffer_send+offset, EVOLUTION_VERSION, strlen(EVOLUTION_VERSION));
+      offset += strlen(EVOLUTION_VERSION);
       this->buffer_send[4] = offset-5;
       this->length_send = offset;
       this->exchange();
