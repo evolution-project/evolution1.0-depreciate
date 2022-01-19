@@ -70,7 +70,7 @@ const std::string ascii_evolution_logo_win =
 
   const std::string ascii_evolution_logo_nowin =
     "\n"
-    "Evolution-SN";
+    "Evolution-SN \n"
 //    "WWWWWWWWWWWWWWWWWWWWWWWWWWWW@=WWWWWWWWWWWWWWWWWWWWWWWWWWWWW\n"
 //    "WWWWWWWWWWWWWWWWWWWWWWWWW@+::.--+@WWWWWWWWWWWWWWWWWWWWWWWWW\n"
 //    "WWWWWWWWWWWWWWWWWWWWWW=:::-:+W=----:#WWWWWWWWWWWWWWWWWWWWWW\n"
