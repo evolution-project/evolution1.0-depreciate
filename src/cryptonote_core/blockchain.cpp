@@ -97,13 +97,13 @@ const forks_t mainnet_hard_forks[] = {
 const forks_t testnet_hard_forks[] = {
  { 1, 0, 0, 1581800400 },
  { 15, 1, 0, 1581806100 },
- { 16, 100, 0, 1641432834 } // Date and time timestamp
+ { 16, 50, 0, 1641432834 } // Date and time timestamp
 };
 
 const forks_t stagenet_hard_forks[] = {
  { 1, 0, 0, 1581800400 },
  { 15, 1, 0, 1581806100 },
- { 16, 100, 0, 1641432834 } // Date and time timestamp
+ { 16, 50, 0, 1641432834 } // Date and time timestamp
 };
 
 const size_t num_mainnet_hard_forks = sizeof(mainnet_hard_forks) / sizeof(mainnet_hard_forks[0]);
@@ -113,7 +113,7 @@ const size_t num_stagenet_hard_forks = sizeof(stagenet_hard_forks) / sizeof(stag
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool, service_nodes::service_node_list& service_node_list, service_nodes::deregister_vote_pool& deregister_vote_pool) :
   m_db(), m_tx_pool(tx_pool), m_hardfork(NULL), m_timestamps_and_difficulties_height(0), m_current_block_cumul_weight_limit(0), m_current_block_cumul_weight_median(0),
-  m_enforce_dns_checkpoints(true), m_max_prepare_blocks_threads(8), m_db_sync_on_blocks(true), m_db_sync_threshold(1), m_db_sync_mode(db_async), m_db_default_sync(false),
+  m_enforce_dns_checkpoints(false), m_max_prepare_blocks_threads(8), m_db_sync_on_blocks(true), m_db_sync_threshold(1), m_db_sync_mode(db_async), m_db_default_sync(false),
   m_fast_sync(true), m_show_time_stats(false), m_sync_counter(0), m_bytes_to_sync(0), m_cancel(false),
   m_long_term_block_weights_window(CRYPTONOTE_LONG_TERM_BLOCK_WEIGHT_WINDOW_SIZE),
   m_long_term_effective_median_block_weight(0),

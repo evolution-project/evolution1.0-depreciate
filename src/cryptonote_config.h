@@ -267,8 +267,8 @@ namespace config
          0x11, 0x11, 0x11, 0x11, 0xFF, 0xFF, 0xFF, 0x11, 0x66, 0x11, 0xFF, 0xFF, 0xFF, 0x88, 0x11, 0x1C
        } }; // Bender's daydream
      const uint64_t REWARD_INTERVAL_IN_BLOCKS = 50;
-     std::string const GOVERNANCE_WALLET_ADDRESS = "ee1zExQDwH55iHSjEKAf8ghz4Tfap8yC6MXvRP8nsvSE2hRX6rUBkmBb72KTpWNuvrNrguHQ8tBZ222LaZHBZwR817nuUh7r9";
-     std::string const DEV_WALLET_ADDRESS = "ee37JYVDQifgD7pgzAfCjG9V4cm87M426BbcpBxfNiE3CfpAcUd87a9JEkYwQ5LLwwVt5dove4ExKPVoXetcZTu112yiEK4Yn";
+     std::string const GOVERNANCE_WALLET_ADDRESS = "";
+     std::string const DEV_WALLET_ADDRESS = "";
    }
 
    namespace blockchain_settings
