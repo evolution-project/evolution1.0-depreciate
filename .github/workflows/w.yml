@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
 
   build-windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     env:
       CCACHE_COMPRESS: 1
       CCACHE_TEMPDIR: C:\Users\runneradmin\.ccache-temp
