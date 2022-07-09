@@ -63,6 +63,51 @@ const saveSwap = async(swap) => {
     }
 }
 
+const isValidTransactionId = async(transactionId) => {
+    let invalidResponse = {isValid: false, message: 'TransactionId is not valid'}
+    let expression = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i
+    
+    // null or empty
+    if (!!transactionId) {
+        // length
+        if (transactionId.length !== config.transactionIdLength)
+            return invalidResponse
+
+        // must be a-z A-Z 0-9 mix
+        if (!transactionId.match(expression))
+            return invalidResponse
+        
+        // valid
+        return {isValid: true, message: 'valid'}
+    }
+    return invalidResponse
+}
+
+const isValidSwapAddress = async(swapAddress) => {
+    let invalidResponse = {isValid: false, message: 'Swap address is not valid'}
+    let expression = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i
+    console.log(swapAddress)
+    // null or empty
+    if (!!swapAddress) {
+console.log(swapAddress.length)
+        // length
+        if (swapAddress.length !== config.swapAddressLength)
+            return invalidResponse
+
+        // must be a-z A-Z 0-9 mix
+        if (!swapAddress.match(expression))
+            return invalidResponse
+
+        // validate against daemon
+        if (!swapAddress.startsWith(config.swapAddressPrefix))
+            return invalidResponse
+        
+        // valid
+        return {isValid: true, message: 'valid'}
+    }
+    return invalidResponse
+}
+
 
 const rpcDaemon = require('@arqma/arqma-rpc').RPCDaemon
 
@@ -95,6 +140,19 @@ app.post('/api/swap', exceptionHandler(async (req, res) => {
     try {
         if (req.body && req.body.transactionId) {
             const swap = req.body
+            let validator = await isValidTransactionId(swap.transactionId)
+
+            if (!validator.isValid) {
+                return res.json({error: validator.message})
+            }
+
+            validator = await isValidSwapAddress(swap.swapAddress)
+            if (!validator.isValid) {
+                return res.json({error: validator.message})
+            }
+
+            // should have validated both input parameters if we make it here!
+
             let response = await walletClient.getTransferByTxId({txid: swap.transactionId})
             if (response) {
                 let transaction = await getTransactions(swap.transactionId) 
@@ -105,8 +163,9 @@ app.post('/api/swap', exceptionHandler(async (req, res) => {
                     await saveSwap(response.transfer)
                 }
             }
-            res.json(response)
+            return res.json(response)
         }
+        
     } catch (error) {
         res.json({error})
     }

@@ -11,9 +11,9 @@
                 <mat-form-field fxFlex="60%">
                     <input matInput 
                             placeholder="New Wallet Address"
-                            formControlName="newWalletAddress">
+                            formControlName="swapAddress">
                 </mat-form-field>
-                <button mat-raised-button (click)="submit()" color="primary">SUBMIT</button>
+                <button mat-raised-button [disabled]="!swapsForm.valid" (click)="submit()" color="primary">SUBMIT</button>
                 <div>{{swapResponse | json}}</div> 
             </div>
         </form>

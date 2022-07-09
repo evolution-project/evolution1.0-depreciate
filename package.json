@@ -28,7 +28,8 @@
     "express": "^4.18.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "zano-rpc-js": "git+https://github.com/muscleman/zano-rpc-js.git"
   },
   "devDependencies": {
     "nodemon": "^2.0.19",
