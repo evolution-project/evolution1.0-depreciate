@@ -16,6 +16,7 @@ export class SwapsComponent implements OnInit {
   swapsForm!: FormGroup
   swapResponse!: SwapResponse
   version!: Version
+  sourceWallet: string = environment.sourceWallet
 
   constructor(private swaps: SwapsService, private fb: FormBuilder) {
     let prefix = new RegExp(`^[${environment.swapAddressPrefix}]{2}`)
@@ -34,6 +35,7 @@ export class SwapsComponent implements OnInit {
 
   submit() {
     this.swaps.submitSwap(this.swapsForm.value).subscribe(swap => {
+      this.swapsForm.patchValue({transactionId: ''})
       this.swapResponse = swap
     })
   }

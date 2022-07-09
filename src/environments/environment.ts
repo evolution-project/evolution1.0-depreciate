@@ -6,7 +6,8 @@ export const environment = {
   production: false,
   transactionIdLength: 64,
   swapAddressLength: 97,
-  swapAddressPrefix: "eX"
+  swapAddressPrefix: "eX",
+  sourceWallet: "evzEFyNHEDjD5WPZ7AnZ7r9kE3YsM51ecSTkqPC7xUZdQdC1UbLjnVW1WPrUeTEPMAeoWcU7ALLkhBLrFzFsYpJs4pTAWngqrj"
 };
 
 /*

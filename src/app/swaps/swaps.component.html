@@ -2,6 +2,10 @@
     <div fxFlex fxlayout="row">
         <form fxFlex="100%" fxFlexLayout="row" [formGroup]="swapsForm">
             <div fxFlex="0 0 100%" fxFlexLayout="column" fxLayoutAlign="center center" class="formDiv">
+                <span><h1>Please transfer coins for SWAP to the below address</h1></span>
+                <span><strong class="spacearound">{{sourceWallet}}</strong><button color="accent" [cdkCopyToClipboard]="sourceWallet" mat-raised-button>
+                    <mat-icon aria-label="Copy">content_copy</mat-icon> Copy
+                </button></span>
                 <mat-form-field fxFlex="60%">
                     <input matInput 
                             placeholder="Transaction ID"

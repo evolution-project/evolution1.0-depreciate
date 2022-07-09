@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `EvoX-Swaps` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `EvoX-Swaps`;
 -- MySQL dump 10.13  Distrib 8.0.27, for Linux (x86_64)
 --
 -- Host: localhost    Database: EvoX-Swaps
@@ -42,7 +40,7 @@ CREATE TABLE `swaps` (
   `status` int NOT NULL DEFAULT '0',
   `new_address` varchar(98) DEFAULT NULL,
   `new_amount` decimal(65,0) DEFAULT NULL,
-  `new_timestamp` timestamp NULL DEFAULT NULL,
+  `new_timestamp` decimal(65,0) DEFAULT NULL,
   `new_txid` varchar(98) DEFAULT NULL,
   PRIMARY KEY (`txid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -57,4 +55,4 @@ CREATE TABLE `swaps` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-09  6:33:32
+-- Dump completed on 2022-07-09 12:49:18

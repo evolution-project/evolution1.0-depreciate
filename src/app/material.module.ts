@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatExpansionModule } from '@angular/material/expansion'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import {MatCardModule} from '@angular/material/card'
+import { ClipboardModule } from '@angular/cdk/clipboard'
 
 const material = [
   MatMenuModule,
@@ -25,7 +26,8 @@ const material = [
   MatInputModule,
   MatExpansionModule,
   MatCheckboxModule,
-  MatCardModule
+  MatCardModule,
+  ClipboardModule
 ]
 
 
