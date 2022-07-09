@@ -25,25 +25,25 @@ DROP TABLE IF EXISTS `swaps`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `swaps` (
-  `txid` varchar(96) NOT NULL,
-  `address` varchar(96) NOT NULL,
-  `amount` decimal(50,9) NOT NULL,
+  `txid` varchar(98) NOT NULL,
+  `address` varchar(98) NOT NULL,
+  `amount` decimal(65,0) NOT NULL,
   `confirmations` bigint NOT NULL,
   `double_spend_seen` tinyint NOT NULL,
-  `fee` decimal(50,9) NOT NULL,
+  `fee` decimal(65,0) NOT NULL,
   `height` bigint NOT NULL,
   `note` varchar(255) NOT NULL,
   `payment_id` varchar(255) NOT NULL,
-  `subaddr_index` int NOT NULL,
-  `suggested_confirmation_threshold` int NOT NULL,
-  `timestamp` timestamp NOT NULL,
+  `subaddr_index` varchar(64) NOT NULL,
+  `suggested_confirmations_threshold` int NOT NULL,
+  `timestamp` decimal(65,0) NOT NULL,
   `type` varchar(10) NOT NULL,
   `unlock_time` bigint NOT NULL,
   `status` int NOT NULL DEFAULT '0',
-  `new_address` varchar(96) DEFAULT NULL,
-  `new_amount` decimal(50,9) DEFAULT NULL,
+  `new_address` varchar(98) DEFAULT NULL,
+  `new_amount` decimal(65,0) DEFAULT NULL,
   `new_timestamp` timestamp NULL DEFAULT NULL,
-  `new_txid` varchar(96) DEFAULT NULL,
+  `new_txid` varchar(98) DEFAULT NULL,
   PRIMARY KEY (`txid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -57,4 +57,4 @@ CREATE TABLE `swaps` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-08 19:42:42
+-- Dump completed on 2022-07-09  6:33:32
