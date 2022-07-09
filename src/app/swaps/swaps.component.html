@@ -1,0 +1,21 @@
+<mat-card class="card">
+    <div fxFlex fxlayout="row">
+        <form fxFlex="100%" fxFlexLayout="row" [formGroup]="swapsForm">
+            <div fxFlex="0 0 100%" fxFlexLayout="column" fxLayoutAlign="center center" class="formDiv">
+                <mat-form-field fxFlex="60%">
+                    <input matInput 
+                            placeholder="Transaction ID"
+                            formControlName="transactionId">
+                </mat-form-field>
+
+                <mat-form-field fxFlex="60%">
+                    <input matInput 
+                            placeholder="New Wallet Address"
+                            formControlName="newWalletAddress">
+                </mat-form-field>
+                <button mat-raised-button (click)="submit()" color="primary">SUBMIT</button>
+                <div>{{swapResponse | json}}</div> 
+            </div>
+        </form>
+    </div>
+</mat-card>

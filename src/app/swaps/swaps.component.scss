@@ -1,0 +1,10 @@
+.card {
+    margin: 32px;
+    .formDiv {
+        flex-direction: column !important;
+        .mat-form-field {
+            width: 65%;
+            padding: 4px;
+        }
+    }
+}

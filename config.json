@@ -1,0 +1,14 @@
+{
+    "database": {
+        "connection": {
+                "user": "gru",
+                "host": "10.0.0.12",
+                "schema": "EvoX-Swaps",
+                "port": 33060,
+                "password": ""
+                }
+        },
+    "daemonAddress": "http://10.0.0.13:19994",
+    "walletAddress": "http://10.0.0.13:19996",
+    "serverPort": 3000
+}

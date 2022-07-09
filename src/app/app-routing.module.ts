@@ -1,7 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { SwapsComponent } from './swaps/swaps.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: '', component: SwapsComponent
+  }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
