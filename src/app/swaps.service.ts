@@ -5,6 +5,7 @@ import { Version } from './models/version'
 import { HttpClient } from '@angular/common/http'
 import { Swap } from './models/swap'
 import { SwapResponse } from './models/swap-response'
+import { environment } from 'src/environments/environment'
 
 
 @Injectable({
@@ -14,7 +15,7 @@ export class SwapsService {
   versionApi: string = 'api/getversion'
   swapApi: string = 'api/swap'
 
-  swapsService: string = 'http://127.0.0.1:3000'
+  swapsService: string = environment.swapsService
 
   constructor(private httpClient: HttpClient) { }
 
