@@ -28,9 +28,6 @@ export class SwapsComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.swaps.getVersion().subscribe(versionInfo => {
-      this.version = versionInfo
-    })
   }
 
   submit() {

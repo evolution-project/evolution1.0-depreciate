@@ -12,17 +12,11 @@ import { environment } from 'src/environments/environment'
   providedIn: 'root'
 })
 export class SwapsService {
-  versionApi: string = 'api/getversion'
   swapApi: string = 'api/swap'
 
   swapsService: string = environment.swapsService
 
   constructor(private httpClient: HttpClient) { }
-
-  public getVersion() : Observable<Version> {
-
-    return this.httpClient.get<Version>(`${this.swapsService}/${this.versionApi}`)
-  }
 
   public submitSwap(swap: Swap) : Observable<SwapResponse> {
     const headers = { 'content-type': 'application/json; charset=UTF-8'}  
