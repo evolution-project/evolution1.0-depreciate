@@ -55,7 +55,7 @@ const getTransactions = async (transactionId) => {
         return swap
     }
     } catch (error) {
-        log(`getTransactions ERROR ${error}`)
+        log(`getTransactions ERROR ${error}`, 1)
     }
     log(`getTransactions no transactions`)
     return []
@@ -109,7 +109,7 @@ const saveSwap = async(swap) => {
         session.commit()
         log(`saveSwap ${JSON.stringify(swap)}`)
     } catch (error) {
-        log(`saveSwap ERROR ${error}`)
+        log(`saveSwap ERROR ${error}`, 1)
     }
 }
 
@@ -117,18 +117,22 @@ const isValidTransactionId = async(transactionId) => {
     let invalidResponse = {isValid: false, message: 'TransactionId is not valid'}
     let expression = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i
     
-    // null or empty
-    if (!!transactionId) {
-        // length
-        if (transactionId.length !== config.source.transactionIdLength)
-            return invalidResponse
+    try {
+        // null or empty
+        if (!!transactionId) {
+            // length
+            if (transactionId.length !== config.source.transactionIdLength)
+                return invalidResponse
 
-        // must be a-z A-Z 0-9 mix
-        if (!transactionId.match(expression))
-            return invalidResponse
-        
-        // valid
-        return {isValid: true, message: 'valid'}
+            // must be a-z A-Z 0-9 mix
+            if (!transactionId.match(expression))
+                return invalidResponse
+            
+            // valid
+            return {isValid: true, message: 'valid'}
+        }
+    } catch (error) {
+        log(`isValidTransactionId ERROR ${error}`, 1)
     }
     return invalidResponse
 }
@@ -136,22 +140,26 @@ const isValidTransactionId = async(transactionId) => {
 const isValidSwapAddress = async(swapAddress) => {
     let invalidResponse = {isValid: false, message: 'Swap address is not valid'}
     let expression = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i
-    // null or empty
-    if (!!swapAddress) {
-        // length
-        if (swapAddress.length !== config.target.swapAddressLength)
-            return invalidResponse
+    try {
+        // null or empty
+        if (!!swapAddress) {
+            // length
+            if (swapAddress.length !== config.target.swapAddressLength)
+                return invalidResponse
 
-        // must be a-z A-Z 0-9 mix
-        if (!swapAddress.match(expression))
-            return invalidResponse
+            // must be a-z A-Z 0-9 mix
+            if (!swapAddress.match(expression))
+                return invalidResponse
 
-        // validate against daemon
-        if (!swapAddress.startsWith(config.target.swapAddressPrefix))
-            return invalidResponse
-        
-        // valid
-        return {isValid: true, message: 'valid'}
+            // validate against daemon
+            if (!swapAddress.startsWith(config.target.swapAddressPrefix))
+                return invalidResponse
+            
+            // valid
+            return {isValid: true, message: 'valid'}
+        }
+    } catch (error) {
+        log(`isValidSwapAddress ERROR ${error}`, 1)
     }
     return invalidResponse
 }
@@ -170,7 +178,7 @@ const calculateSwapAmount = async(transaction) => {
         log(`calculateSwapAmount ${JSON.stringify(result)}`)
         return result
     } catch (error) {
-        log(`saveSwap ERROR ${error}`)
+        log(`saveSwap ERROR ${error}`, 1)
         return {success: false}
     }
 }
@@ -188,10 +196,10 @@ const getSwaps = async() => {
             log(`getSwaps ${JSON.stringify(swaps)}`)
             return swaps
         }
-        return []
     } catch (error) {
-        log(`getSwaps ERROR ${error}`)
+        log(`getSwaps ERROR ${error}`, 1)
     }  
+    return []
 }
 
 const updateSwap = async(transfer, swap) => {
@@ -203,7 +211,7 @@ const updateSwap = async(transfer, swap) => {
         session.commit()
         log(`updateSwap SUCCESS swap completed...`)
     } catch (error) {
-        log(`getSwaps ERROR ${error}`)
+        log(`updateSwap ERROR ${error}`, 1)
     }  
 }
 
@@ -227,26 +235,30 @@ const transferSwap = async(swap) => {
         //              }
         return {success: true, result}
     } catch (error) {
-        log(`transferSwap ERROR ${error}`)
+        log(`transferSwap ERROR ${error}`, 1)
         return {success: false}
     }
 }
 
 const transfer_UnProcessed_Swaps_To_Target_Wallet = async() => {
-    let swaps = await getSwaps()
-    log(`transfer started....`, 1)
-    for (const swap of swaps) {
-        let processed = await transferSwap(swap)
-        
-        if (processed.success)
-        {
-            //update database status to processed
-            await updateSwap(processed.result, swap)
+    try {
+        let swaps = await getSwaps()
+        log(`transfer started....`, 1)
+        for (const swap of swaps) {
+            let processed = await transferSwap(swap)
+            
+            if (processed.success)
+            {
+                //update database status to processed
+                await updateSwap(processed.result, swap)
 
-            //maybe websocket.emit back to angular FE
+                //maybe websocket.emit back to angular FE
+            }
         }
-    }
     log(`transfer completed...`, 1)
+    } catch (error) {
+        log(`transfer_UnProcessed_Swaps_To_Target_Wallet ERROR ${error}`, 1)
+    }
     return
 }
 
@@ -300,7 +312,7 @@ app.post('/api/swap', exceptionHandler(async (req, res) => {
         }
         
     } catch (error) {
-        log(`/api/swap ERROR ${error}`)
+        log(`/api/swap ERROR ${error}`, 1)
         res.json({error})
     }
 }))

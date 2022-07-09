@@ -20,7 +20,6 @@ export class SwapsComponent implements OnInit {
 
   constructor(private swaps: SwapsService, private fb: FormBuilder) {
     let prefix = new RegExp(`^[${environment.swapAddressPrefix}]{2}`)
-    console.log(prefix)
     this.swapsForm = this.fb.group({
       transactionId: new FormControl('', [Validators.required, Validators.minLength(environment.transactionIdLength), Validators.maxLength(environment.transactionIdLength)]),
       swapAddress: new FormControl('', [Validators.required, Validators.minLength(environment.swapAddressLength), Validators.maxLength(environment.swapAddressLength), Validators.pattern(prefix)])
