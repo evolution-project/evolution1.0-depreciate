@@ -188,7 +188,8 @@ const getSwaps = async() => {
         const session = await dbClient.getSession()
         session.startTransaction()
         // status 0 === unprocessed 
-        let query = `SELECT txid, new_address, new_amount, status, confirmations FROM swaps WHERE status = 0 AND confirmations = 0;`
+        //let query = `SELECT txid, new_address, new_amount, status, confirmations FROM swaps WHERE status = 0 AND confirmations > ${config.source.confirmations};`
+        let query = `SELECT txid, new_address, new_amount, status, confirmations FROM swaps WHERE status = 0;`
         let result = await session.sql(query).execute()
         session.commit()
         if (result.hasData()) {
