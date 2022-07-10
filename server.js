@@ -187,8 +187,8 @@ const getSwaps = async() => {
     try {
         const session = await dbClient.getSession()
         session.startTransaction()
-        // status 0 === unprocessed && confirmations > 2
-        let query = `SELECT txid, new_address, new_amount, status, confirmations FROM swaps WHERE status = 0 AND confirmations > ${config.source.confirmations};`
+        // status 0 === unprocessed 
+        let query = `SELECT txid, new_address, new_amount, status, confirmations FROM swaps WHERE status = 0 AND confirmations = 0;`
         let result = await session.sql(query).execute()
         session.commit()
         if (result.hasData()) {
@@ -206,7 +206,7 @@ const updateSwap = async(transfer, swap) => {
     try {
         const session = await dbClient.getSession()
         session.startTransaction()
-        let query = `UPDATE swaps set status = 1, new_txid = '${transfer.tx_hash}', new_timestamp = ${new Date().getTime()} WHERE txid = '${swap[0]}';` // status 1 === processed
+        let query = `UPDATE swaps set status = 1, new_txid = '${transfer.tx_hash}', new_timestamp = ${new Date().getTime()}, confirmations = ${swap[4]} WHERE txid = '${swap[0]}';` // status 1 === processed
         await session.sql(query).execute()
         session.commit()
         log(`updateSwap SUCCESS swap completed...`)
@@ -245,14 +245,19 @@ const transfer_UnProcessed_Swaps_To_Target_Wallet = async() => {
         let swaps = await getSwaps()
         log(`transfer started....`, 1)
         for (const swap of swaps) {
-            let processed = await transferSwap(swap)
-            
-            if (processed.success)
-            {
-                //update database status to processed
-                await updateSwap(processed.result, swap)
 
-                //maybe websocket.emit back to angular FE
+            let response = await walletClient.getTransferByTxId({txid: swap.txid})
+            if (response && response.confirmations >= config.source.confirmations) {
+                swap.confirmations = respons.confirmations
+                let processed = await transferSwap(swap)
+                
+                if (processed.success)
+                {
+                    //update database status to processed
+                    await updateSwap(processed.result, swap)
+
+                    //maybe websocket.emit back to angular FE
+                }
             }
         }
     log(`transfer completed...`, 1)
