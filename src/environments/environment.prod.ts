@@ -4,5 +4,5 @@ export const environment = {
   swapAddressLength: 97,
   swapAddressPrefix: "eX",
   sourceWallet: "evzEFyNHEDjD5WPZ7AnZ7r9kE3YsM51ecSTkqPC7xUZdQdC1UbLjnVW1WPrUeTEPMAeoWcU7ALLkhBLrFzFsYpJs4pTAWngqrj",
-  swapsService: "http://127.0.0.1:3000"
+  swapsService: "https://swap.evolution-network.org/api/swap"
 };

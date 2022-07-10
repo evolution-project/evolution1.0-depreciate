@@ -314,7 +314,7 @@ app.post('/api/swap', exceptionHandler(async (req, res) => {
                 }
             }
             
-            return res.json({success: 'Please check your new wallet for swap amount'})
+            return res.json({SUCCESS: 'Please check your new wallet for swap amount'})
         }
         
     } catch (error) {
