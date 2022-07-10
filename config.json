@@ -15,7 +15,7 @@
     "source": {
         "atomicUnits": 1000000000,
         "ratio": 1,
-        "walletAddress": "http://127.0.0.1:50502",
+        "walletAddress": "http://127.0.0.1:50501",
         "transactionIdLength": 64,
         "confirmations": 1,
         "doubleSpendMessage": "Fuck off no double spends allowed"
@@ -26,7 +26,7 @@
         "fee": 10000000000,
         "due": 5000,
         "schedule": 5000,
-        "walletAddress": "http://127.0.0.1:50501",
+        "walletAddress": "http://127.0.0.1:50502",
         "swapAddressPrefix": "eX",
         "swapAddressLength": 97,
         "mixin": 0,
