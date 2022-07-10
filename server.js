@@ -247,7 +247,7 @@ const transfer_UnProcessed_Swaps_To_Target_Wallet = async() => {
         log(`transfer started....`, 1)
         for (const swap of swaps) {
 
-            let response = await walletClient.getTransferByTxId({txid: swap.txid})
+            let response = await walletClient.getTransferByTxId({txid: swap[4]})
             if (response && response.confirmations >= config.source.confirmations) {
                 swap.confirmations = respons.confirmations
                 let processed = await transferSwap(swap)
